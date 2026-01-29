@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nutzungsbedingungen - Server</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&family=Inter:wght@300;400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        Server: { black: '#050505', red: '#00CED1', gold: '#ffcc00' }
+                    },
+                    fontFamily: {
+                        display: ['Orbitron', 'sans-serif'],
+                        tech: ['Rajdhani', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="rechtliches.css">
+</head>
+
+<body class="bg-Server-black text-gray-200 selection:bg-Server-red selection:text-white">
+    <nav class="fixed w-full z-50 py-4 border-b border-white/5 bg-Server-black/90 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
+            <a href="../startseite/startseite.html" class="flex items-center gap-3 group">
+                <img src="../startseite/Logo.svg" onerror="this.src='https://via.placeholder.com/150x50?text=Server'"
+                    alt="Server Logo" class="h-10 w-auto">
+                <span class="font-display font-bold text-2xl tracking-wider text-white">SERVER<span
+                        class="text-Server-red">NAME</span></span>
+            </a>
+            <a href="../startseite/startseite.html"
+                class="text-gray-400 hover:text-white transition-colors font-tech uppercase tracking-wider flex items-center gap-2"><i
+                    class="fas fa-arrow-left"></i> Zurück</a>
+        </div>
+    </nav>
+
+    <main class="pt-32 pb-20 px-4 container mx-auto max-w-6xl">
+        <div class="legal-container">
+            <!-- Sidebar -->
+            <aside class="legal-sidebar">
+                <h3>Rechtliches</h3>
+                <nav class="legal-nav">
+                    <a href="impressum.html">Impressum</a>
+                    <a href="datenschutz.html">Datenschutz</a>
+                    <a href="nutzungsbedingungen.html" class="active">Nutzungsbedingungen</a>
+                </nav>
+            </aside>
+
+            <!-- Content -->
+            <div class="legal-content-wrapper legal-content">
+                <h1 class="text-4xl font-bold border-b border-white/10 pb-6">Nutzungsbedingungen (ToS)</h1>
+                <p class="text-sm text-gray-500 mb-8">Letzte Aktualisierung: [Datum]</p>
+
+                <h2>1. Einleitung</h2>
+                <p>[Platzhalter Einleitung]</p>
+
+                <h2>2. Geltungsbereich</h2>
+                <p>[Platzhalter Geltungsbereich]</p>
+
+                <h2>3. Voraussetzungen zur Nutzung</h2>
+                <p>[Platzhalter Voraussetzungen]</p>
+
+                <h2>4. Verhaltensregeln</h2>
+                <p>[Platzhalter Verhaltensregeln]</p>
+
+                <h2>5. Nutzung unserer Bots</h2>
+                <p>[Platzhalter Bot-Nutzung]</p>
+
+                <h2>6. Haftungsausschluss</h2>
+                <p>[Platzhalter Haftungsausschluss]</p>
+
+                <h2>7. Änderungen an diesen Bedingungen</h2>
+                <p>[Platzhalter Änderungen]</p>
+
+                <h2>8. Kontakt</h2>
+                <p>[Platzhalter Kontakt]</p>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="de" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server - Server Name | Der #1 ER:LC Server</title>
+
+    <!-- Preconnect für schnelleres Laden -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="dns-prefetch" href="https://tr.rbxcdn.com">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts (async für schnelleres Laden) -->
+    <link rel="preload" as="style"
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;600;700&family=Inter:wght@300;400;600&display=swap">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;600;700&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;600;700&family=Inter:wght@300;400;600&display=swap"
+            rel="stylesheet">
+    </noscript>
+
+    <!-- FontAwesome Icons (async) -->
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    </noscript>
+
+    <!-- Tailwind Konfiguration (Inline für Stabilität) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        Server: {
+                            black: '#050505',
+                            dark: '#0f0f0f',
+                            card: '#161616',
+                            red: '#00CED1',
+                            red_dark: '#008B8B',
+                            gold: '#ffcc00',
+                            gold_dim: '#b38f00',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Orbitron', 'sans-serif'],
+                        tech: ['Rajdhani', 'sans-serif'],
+                    },
+                    backgroundImage: {
+                        'hero-pattern': "linear-gradient(to bottom, rgba(5,5,5,0.2), rgba(5,5,5,1))",
+                        'grid-pattern': "none",
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #050505;
+            color: #e5e5e5;
+            overflow-x: hidden;
+        }
+
+        /* Neon Glows */
+        .glow-text-red {
+            text-shadow: 0 0 15px rgba(0, 206, 209, 0.6);
+        }
+
+        .glow-text-gold {
+            text-shadow: 0 0 15px rgba(255, 204, 0, 0.6);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0f0f0f;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00CED1;
+        }
+
+        /* Reveal Animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Card Hover Effects */
+        .job-card {
+            transition: all 0.4s ease;
+            background: linear-gradient(180deg, rgba(22, 22, 22, 1) 0%, rgba(15, 15, 15, 1) 100%);
+        }
+
+        .job-card:hover {
+            transform: translateY(-10px);
+            border-color: #ffcc00;
+            box-shadow: 0 10px 30px rgba(255, 204, 0, 0.15);
+        }
+
+        /* FAQ Accordion */
+        .accordion-content {
+            transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 200px;
+            opacity: 1;
+        }
+
+        .accordion-item.active .icon-rotate {
+            transform: rotate(180deg);
+        }
+
+        /* Loader Animation */
+        .loader-bar {
+            width: 200px;
+            height: 4px;
+            background: #222;
+            margin-top: 20px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loader-progress {
+            width: 0%;
+            height: 100%;
+            background: #00CED1;
+            animation: loadProgress 1.5s ease-in-out forwards;
+        }
+
+        @keyframes loadProgress {
+            0% {
+                width: 0%;
+            }
+
+            100% {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body class="antialiased selection:bg-Server-red selection:text-white bg-Server-black text-gray-200">
+
+    <!-- Loading Screen -->
+    <div id="loader"
+        class="fixed inset-0 bg-black z-[10000] flex flex-col justify-center items-center transition-opacity duration-500">
+        <h2 class="font-display text-3xl tracking-[0.2em] font-bold text-white animate-pulse">Server<span
+                class="text-Server-red">LOADER</span></h2>
+        <div class="loader-bar">
+            <div class="loader-progress"></div>
+        </div>
+        <p class="mt-4 font-tech text-Server-gold text-sm uppercase tracking-widest">Initialisiere Roleplay Systeme...
+        </p>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar"
+        class="fixed w-full z-50 transition-all duration-300 py-4 border-b border-white/5 bg-Server-black/80 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
+            <!-- Logo -->
+            <a href="#" class="flex items-center gap-3 group">
+                <img src="Logo.svg" onerror="this.src='https://via.placeholder.com/150x50?text=Server'"
+                    alt="Server Logo" class="h-10 w-auto group-hover:brightness-125 transition-all">
+                <div class="hidden sm:block">
+                    <span class="font-display font-bold text-2xl tracking-wider text-white">SERVER<span
+                            class="text-Server-red">NAME</span></span>
+                </div>
+            </a>
+
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#home"
+                    class="font-tech text-lg font-medium text-gray-400 hover:text-white transition-colors uppercase tracking-wide">Start</a>
+                <a href="../karriere/index.html"
+                    class="font-tech text-lg font-medium text-gray-400 hover:text-white transition-colors uppercase tracking-wide">Karriere</a>
+                <a href="#howto"
+                    class="font-tech text-lg font-medium text-gray-400 hover:text-white transition-colors uppercase tracking-wide">Anleitung</a>
+                <a href="../help/help.html"
+                    class="font-tech text-lg font-medium text-gray-400 hover:text-white transition-colors uppercase tracking-wide">Hilfe</a>
+                <a href="../forum/forum.html"
+                    class="font-tech text-lg font-medium text-gray-400 hover:text-white transition-colors uppercase tracking-wide">Forum</a>
+
+                <!-- Server Status Widget -->
+                <div class="flex items-center gap-2 px-4 py-1.5 bg-Server-card border border-white/10 rounded-full">
+                    <span class="relative flex h-3 w-3">
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                    </span>
+                    <span class="font-display text-xs text-green-400 tracking-wider">ONLINE</span>
+                    <span class="font-mono text-xs text-gray-500 border-l border-gray-700 pl-2 ml-1">128/150</span>
+                </div>
+
+                <a href="#join"
+                    class="bg-Server-red hover:bg-Server-red_dark text-white px-6 py-2 rounded skew-x-[-10deg] font-display font-bold text-sm tracking-wider transition-all hover:scale-105 shadow-[0_0_20px_rgba(255,42,42,0.4)]">
+                    <span class="block skew-x-[10deg]">BEITRETEN</span>
+                </a>
+            </div>
+
+            <!-- Mobile Menu Toggle -->
+            <button id="mobile-menu-btn" class="md:hidden text-white text-2xl">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Dropdown -->
+        <div id="mobile-menu"
+            class="hidden absolute top-full left-0 w-full bg-Server-black/95 border-b border-Server-red/30 flex-col items-center py-8 gap-6 md:hidden">
+            <a href="#home" class="text-xl font-display uppercase" onclick="toggleMenu()">Startseite</a>
+            <a href="#features" class="text-xl font-display uppercase" onclick="toggleMenu()">Features</a>
+            <a href="../karriere/index.html" class="text-xl font-display uppercase" onclick="toggleMenu()">Karriere</a>
+            <a href="#join" class="text-xl font-display text-Server-red font-bold uppercase"
+                onclick="toggleMenu()">Jetzt
+                Spielen</a>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section id="home" class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+        <!-- Video Background Fallback / Image -->
+        <div class="absolute inset-0 bg-hero-pattern bg-cover bg-center bg-fixed z-0"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-Server-black via-transparent to-transparent z-10"></div>
+
+        <!-- Animated Particles/Dust (CSS Overlay) -->
+        <div
+            class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 animate-pulse-slow z-10">
+        </div>
+
+        <div class="relative z-20 container mx-auto px-4 text-center">
+            <div
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-Server-gold/30 bg-Server-gold/10 backdrop-blur-md mb-8 animate-float">
+                <i class="fas fa-star text-Server-gold text-xs"></i>
+                <span class="font-tech text-Server-gold text-sm font-bold tracking-[0.2em] uppercase">Premium German
+                    Roleplay</span>
+                <i class="fas fa-star text-Server-gold text-xs"></i>
+            </div>
+
+            <h1
+                class="font-display text-6xl md:text-8xl lg:text-9xl font-black mb-6 leading-none tracking-tighter reveal active">
+                DEIN <span class="text-white glow-text-red">LEBEN.</span><br>
+                DEINE <span
+                    class="text-transparent bg-clip-text bg-gradient-to-r from-Server-gold to-Server-red glow-text-gold">STORY.</span>
+            </h1>
+
+            <p
+                class="text-gray-400 font-tech text-xl md:text-2xl max-w-3xl mx-auto mb-12 leading-relaxed reveal delay-100">
+                Tauche ein in das authentischste deutsche ER:LC Erlebnis.
+                Vom Streifendienst in Berlin-Lackierung bis hin zu illegalen Geschäften im Untergrund.
+                Hier schreibst <strong class="text-white">du</strong> das Drehbuch.
+            </p>
+
+            <div class="flex flex-col sm:flex-row justify-center gap-6 reveal delay-200">
+                <a href="#join"
+                    class="group relative px-10 py-5 bg-white text-black font-display font-black text-lg tracking-widest uppercase overflow-hidden hover:text-white transition-colors">
+                    <div
+                        class="absolute inset-0 w-0 bg-Server-red transition-all duration-[250ms] ease-out group-hover:w-full">
+                    </div>
+                    <span class="relative flex items-center gap-3">
+                        <i class="fas fa-play text-sm"></i> Server Betreten
+                    </span>
+                </a>
+                <a href="https://discord.gg/link" target="_blank"
+                    class="px-10 py-5 border border-white/30 hover:border-white hover:bg-white/5 font-display font-bold text-lg tracking-widest text-white transition-all uppercase flex items-center justify-center gap-3">
+                    <i class="fab fa-discord"></i> Discord
+                </a>
+            </div>
+
+            <!-- Scroll Indicator -->
+            <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce opacity-50">
+                <i class="fas fa-chevron-down text-2xl text-white"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- STATS BAR -->
+    <div class="bg-Server-card border-y border-white/5 py-8 relative z-30">
+        <div class="container mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div class="text-center reveal">
+                <div class="text-4xl font-display font-bold text-white mb-1 counter" data-target="15420">0</div>
+                <div class="text-xs font-tech text-Server-red uppercase tracking-[0.2em]">Mitglieder</div>
+            </div>
+            <div class="text-center reveal delay-75">
+                <div class="text-4xl font-display font-bold text-white mb-1 counter" data-target="85">0</div>
+                <div class="text-xs font-tech text-Server-gold uppercase tracking-[0.2em]">Fahrzeuge</div>
+            </div>
+            <div class="text-center reveal delay-150">
+                <div class="text-4xl font-display font-bold text-white mb-1 counter" data-target="12">0</div>
+                <div class="text-xs font-tech text-Server-red uppercase tracking-[0.2em]">Fraktionen</div>
+            </div>
+            <div class="text-center reveal delay-200">
+                <div class="text-4xl font-display font-bold text-white mb-1">24/7</div>
+                <div class="text-xs font-tech text-Server-gold uppercase tracking-[0.2em]">Online</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FEATURES GRID -->
+    <section id="features" class="py-32 bg-Server-black relative">
+        <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-Server-red/5 rounded-full blur-[100px]"></div>
+
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-16 reveal">
+                <div>
+                    <h4 class="font-tech text-Server-red uppercase tracking-widest font-bold mb-2">// FEATURES</h4>
+                    <h2 class="font-display text-4xl md:text-5xl font-bold text-white">NEXT GEN <span
+                            class="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-600">GAMING</span>
+                    </h2>
+                </div>
+                <p class="text-gray-400 max-w-md text-right mt-4 md:mt-0 font-tech text-lg">
+                    Wir haben ER:LC bis an die Grenzen modifiziert, um dir das realistischste Deutschland-Erlebnis zu
+                    bieten.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div
+                    class="group p-8 rounded-2xl bg-Server-card border border-white/5 hover:border-Server-red/50 transition-all duration-500 hover:-translate-y-2 reveal">
+                    <div
+                        class="h-16 w-16 bg-gradient-to-br from-Server-red to-black rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-Server-red/20">
+                        <i class="fas fa-university text-2xl text-white"></i>
+                    </div>
+                    <h3 class="font-display text-2xl font-bold mb-4">Real Economy</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        Ein Wirtschaftssystem, das funktioniert. Verdiene Geld legal oder illegal, kaufe Immobilien und
+                        baue dein Imperium auf. Keine Inflation, faire Preise.
+                    </p>
+                </div>
+
+                <!-- Card 2 -->
+                <div
+                    class="group p-8 rounded-2xl bg-Server-card border border-white/5 hover:border-Server-gold/50 transition-all duration-500 hover:-translate-y-2 reveal delay-100">
+                    <div
+                        class="h-16 w-16 bg-gradient-to-br from-Server-gold to-black rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-Server-gold/20">
+                        <i class="fas fa-car text-2xl text-white"></i>
+                    </div>
+                    <h3 class="font-display text-2xl font-bold mb-4">Custom Fuhrpark</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        Über 80 modifizierte Fahrzeuge. Polizei (BMW, VW, Mercedes), Rettungswagen und
+                        Zivilfahrzeuge mit realistischen Sirenen (E-Horn & Pressluft).
+                    </p>
+                </div>
+
+                <!-- Card 3 -->
+                <div
+                    class="group p-8 rounded-2xl bg-Server-card border border-white/5 hover:border-blue-500/50 transition-all duration-500 hover:-translate-y-2 reveal delay-200">
+                    <div
+                        class="h-16 w-16 bg-gradient-to-br from-blue-600 to-black rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-blue-600/20">
+                        <i class="fas fa-users text-2xl text-white"></i>
+                    </div>
+                    <h3 class="font-display text-2xl font-bold mb-4">Serious RP</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        Kein Fail-RP, kein RDM. Unser Regelwerk und das aktive Staff-Team sorgen dafür, dass RP-Stränge
+                        über Tage und Wochen gehen können.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- JOB CENTER SECTION (NEW) -->
+    <section id="jobs" class="py-32 bg-Server-dark border-y border-white/5 relative">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-20 reveal">
+                <span class="font-tech text-Server-gold font-bold tracking-widest uppercase text-sm mb-2 block">Wähle
+                    deinen Weg</span>
+                <h2 class="font-display text-4xl md:text-5xl font-bold text-white mb-6">JOBS BEI <span
+                        class="text-Server-red">Server</span></h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-Server-gold to-Server-red mx-auto"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Job 1 -->
+                <div
+                    class="job-card p-6 rounded-xl border border-white/5 relative overflow-hidden group cursor-pointer reveal">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i class="fas fa-shield-alt text-8xl text-blue-500"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <div
+                            class="w-12 h-12 rounded-full bg-blue-900/50 flex items-center justify-center mb-4 border border-blue-500/30">
+                            <i class="fas fa-balance-scale text-blue-400"></i>
+                        </div>
+                        <h3 class="font-display text-xl font-bold text-white mb-2">Polizei</h3>
+                        <p class="text-sm text-gray-400 mb-6 min-h-[60px]">Sorge für Recht und Ordnung auf den Straßen.
+                            Werde Teil des Streifendienstes oder qualifiziere dich für das SEK.</p>
+                        <span class="text-xs font-tech text-blue-400 uppercase tracking-wider flex items-center gap-2">
+                            Jetzt Bewerben <i
+                                class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Job 2 -->
+                <div
+                    class="job-card p-6 rounded-xl border border-white/5 relative overflow-hidden group cursor-pointer reveal delay-75">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i class="fas fa-heartbeat text-8xl text-Server-red"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <div
+                            class="w-12 h-12 rounded-full bg-red-900/50 flex items-center justify-center mb-4 border border-red-500/30">
+                            <i class="fas fa-ambulance text-Server-red"></i>
+                        </div>
+                        <h3 class="font-display text-xl font-bold text-white mb-2">Rettungsdienst</h3>
+                        <p class="text-sm text-gray-400 mb-6 min-h-[60px]">Rette Leben am Limit. Als Notfallsanitäter
+                            oder Notarzt bist du die erste Hoffnung für Verletzte.</p>
+                        <span
+                            class="text-xs font-tech text-Server-red uppercase tracking-wider flex items-center gap-2">
+                            Jetzt Bewerben <i
+                                class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Job 3 -->
+                <div
+                    class="job-card p-6 rounded-xl border border-white/5 relative overflow-hidden group cursor-pointer reveal delay-150">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i class="fas fa-gavel text-8xl text-gray-500"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <div
+                            class="w-12 h-12 rounded-full bg-gray-800/50 flex items-center justify-center mb-4 border border-gray-500/30">
+                            <i class="fas fa-landmark text-gray-300"></i>
+                        </div>
+                        <h3 class="font-display text-xl font-bold text-white mb-2">Justiz</h3>
+                        <p class="text-sm text-gray-400 mb-6 min-h-[60px]">Als Richter oder Staatsanwalt entscheidest du
+                            über das Schicksal anderer. Das Gesetz ist dein Werkzeug.</p>
+                        <span class="text-xs font-tech text-gray-300 uppercase tracking-wider flex items-center gap-2">
+                            Jetzt Bewerben <i
+                                class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Job 4 -->
+                <div
+                    class="job-card p-6 rounded-xl border border-white/5 relative overflow-hidden group cursor-pointer reveal delay-200">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i class="fas fa-mask text-8xl text-Server-gold"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <div
+                            class="w-12 h-12 rounded-full bg-yellow-900/50 flex items-center justify-center mb-4 border border-Server-gold/30">
+                            <i class="fas fa-skull-crossbones text-Server-gold"></i>
+                        </div>
+                        <h3 class="font-display text-xl font-bold text-white mb-2">Unterwelt</h3>
+                        <p class="text-sm text-gray-400 mb-6 min-h-[60px]">Gründe eine Gang, handele mit verbotenen
+                            Waren oder plane den größten Bankraub der Geschichte.</p>
+                        <span
+                            class="text-xs font-tech text-Server-gold uppercase tracking-wider flex items-center gap-2">
+                            Eintauchen <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW TO JOIN SECTION (STEP BY STEP) -->
+    <section id="howto" class="py-24 bg-Server-black">
+        <div class="container mx-auto px-4">
+            <h2 class="font-display text-4xl font-bold text-white text-center mb-16 reveal">DEIN START AUF <span
+                    class="text-Server-red">Server</span></h2>
+
+            <div class="flex flex-col md:flex-row justify-center items-center gap-8 relative">
+                <!-- Connecting Line (Desktop) -->
+                <div
+                    class="hidden md:block absolute top-1/2 left-20 right-20 h-0.5 bg-gradient-to-r from-transparent via-gray-700 to-transparent -z-1">
+                </div>
+
+                <!-- Step 1 -->
+                <div class="relative w-full md:w-1/3 text-center reveal">
+                    <div
+                        class="w-20 h-20 mx-auto bg-Server-card border-2 border-Server-red rounded-full flex items-center justify-center text-3xl font-display font-bold text-white mb-6 shadow-[0_0_20px_rgba(255,42,42,0.3)] z-10 relative">
+                        1</div>
+                    <h3 class="text-xl font-bold text-white mb-2">Discord Beitreten</h3>
+                    <p class="text-gray-400 text-sm px-8">Komm auf unseren Discord Server. Dort findest du alle
+                        wichtigen Infos und die Community.</p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="relative w-full md:w-1/3 text-center reveal delay-100">
+                    <div
+                        class="w-20 h-20 mx-auto bg-Server-card border-2 border-Server-gold rounded-full flex items-center justify-center text-3xl font-display font-bold text-white mb-6 shadow-[0_0_20px_rgba(255,204,0,0.3)] z-10 relative">
+                        2</div>
+                    <h3 class="text-xl font-bold text-white mb-2">Regelwerk Lesen</h3>
+                    <p class="text-gray-400 text-sm px-8">Lies dir unsere Serverregeln durch. Serious RP erfordert
+                        Fairness und Verständnis.</p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="relative w-full md:w-1/3 text-center reveal delay-200">
+                    <div
+                        class="w-20 h-20 mx-auto bg-Server-card border-2 border-white rounded-full flex items-center justify-center text-3xl font-display font-bold text-white mb-6 shadow-[0_0_20px_rgba(255,255,255,0.3)] z-10 relative">
+                        3</div>
+                    <h3 class="text-xl font-bold text-white mb-2">Whitelist & Joinen</h3>
+                    <p class="text-gray-400 text-sm px-8">Trage dich in die Whitelist ein und connecte über den Private
+                        Server Code.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- JOIN CTA -->
+    <section id="join" class="py-32 relative overflow-hidden flex flex-col items-center justify-center text-center">
+        <!-- Background -->
+        <div
+            class="absolute inset-0 bg-[url('https://tr.rbxcdn.com/180DAY-77845dda20e6355c73bc8958dc698fea/768/432/Image/Webp/noFilter')] bg-cover bg-center opacity-20 blur-sm">
+        </div>
+        <div class="absolute inset-0 bg-gradient-to-b from-Server-black via-Server-black/80 to-Server-black"></div>
+
+        <div class="relative z-10 container mx-auto px-4">
+            <h2 class="font-display text-5xl md:text-7xl font-black text-white mb-6 uppercase">
+                Warte nicht <span class="text-Server-red">Länger.</span>
+            </h2>
+            <p class="text-xl text-gray-300 mb-10 max-w-2xl mx-auto font-tech">
+                Die Straßen von Liberty County warten auf dich. Baue dein Vermächtnis auf.
+            </p>
+
+            <a href="https://discord.gg/link" target="_blank"
+                class="inline-block bg-[#5865F2] hover:bg-[#4752C4] text-white text-xl font-bold py-5 px-12 rounded-xl shadow-2xl hover:shadow-[#5865F2]/50 transform transition-all hover:scale-105 hover:-rotate-1">
+                <i class="fab fa-discord mr-3"></i> JETZT BEITRETEN
+            </a>
+            <p class="mt-6 text-sm text-gray-500">Kostenloser Zugang • 24/7 Online • Aktive Community</p>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-black border-t border-white/10 pt-16 pb-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div class="col-span-1 md:col-span-2">
+                    <h3 class="font-display text-3xl font-bold text-white mb-4">Server <span
+                            class="text-Server-red">SERVER</span></h3>
+                    <p class="text-gray-500 max-w-md mb-6">
+                        Der führende deutsche Roleplay Server für Emergency Response: Liberty County. Wir bieten
+                        Qualität, Stabilität und eine unvergleichliche Community.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="#"
+                            class="w-10 h-10 rounded bg-gray-900 flex items-center justify-center text-gray-400 hover:text-white hover:bg-Server-red transition-all"><i
+                                class="fab fa-twitter"></i></a>
+                        <a href="#"
+                            class="w-10 h-10 rounded bg-gray-900 flex items-center justify-center text-gray-400 hover:text-white hover:bg-Server-red transition-all"><i
+                                class="fab fa-youtube"></i></a>
+                        <a href="#"
+                            class="w-10 h-10 rounded bg-gray-900 flex items-center justify-center text-gray-400 hover:text-white hover:bg-Server-red transition-all"><i
+                                class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-white mb-4 uppercase tracking-wider">Links</h4>
+                    <ul class="space-y-2 text-gray-500">
+                        <li><a href="../startseite/startseite.html"
+                                class="hover:text-Server-red transition-colors">Startseite</a></li>
+                        <li><a href="../startseite/startseite.html#rules"
+                                class="hover:text-Server-gold transition-colors">Regelwerk</a></li>
+                        <li><a href="../team/team.html" class="hover:text-Server-gold transition-colors">Team</a></li>
+                        <li><a href="../help/help.html" class="hover:text-Server-gold transition-colors">Hilfe</a></li>
+                        <li><a href="/server/server.html" class="hover:text-Server-red transition-colors">System
+                                Status</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-white mb-4 uppercase tracking-wider">Rechtliches</h4>
+                    <ul class="space-y-2 text-gray-500">
+                        <li><a href="../rechtliches/impressum.html"
+                                class="hover:text-white transition-colors">Impressum</a>
+                        </li>
+                        <li><a href="../rechtliches/datenschutz.html"
+                                class="hover:text-white transition-colors">Datenschutz</a></li>
+                        <li><a href="../rechtliches/nutzungsbedingungen.html"
+                                class="hover:text-white transition-colors">Nutzungsbedingungen</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div
+                class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-600">
+                <p>&copy; 2025 Server Name. Alle Rechte vorbehalten.</p>
+                <p>Not affiliated with Roblox Corporation or Police Roleplay Community.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // 1. Loader Logic
+        function hideLoader() {
+            const loader = document.getElementById('loader');
+            if (loader) {
+                loader.classList.add('opacity-0'); // Tailwind class for fade out
+                setTimeout(() => loader.style.display = 'none', 500);
+            }
+        }
+        // Safety timeout: Hide loader immediately (max 100ms fallback)
+        setTimeout(hideLoader, 100);
+        window.addEventListener('load', hideLoader);
+
+        // 2. Mobile Menu
+        function toggleMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+            menu.classList.toggle('flex');
+        }
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        if (menuBtn) menuBtn.addEventListener('click', toggleMenu);
+
+        // 3. Navbar Scroll Blur
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (nav) {
+                if (window.scrollY > 50) {
+                    nav.classList.add('py-2', 'shadow-2xl', 'bg-Server-black/95');
+                    nav.classList.remove('py-4', 'bg-Server-black/80');
+                } else {
+                    nav.classList.add('py-4', 'bg-Server-black/80');
+                    nav.classList.remove('py-2', 'shadow-2xl', 'bg-Server-black/95');
+                }
+            }
+        });
+
+        // 4. Reveal on Scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // 5. Number Counters
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counters = entry.target.querySelectorAll('.counter');
+                    counters.forEach(c => {
+                        const target = +c.getAttribute('data-target');
+                        const duration = 2000;
+                        const step = target / (duration / 16);
+                        let current = 0;
+                        const update = () => {
+                            current += step;
+                            if (current < target) {
+                                c.innerText = Math.floor(current).toLocaleString();
+                                requestAnimationFrame(update);
+                            } else {
+                                c.innerText = target.toLocaleString();
+                            }
+                        };
+                        update();
+                    });
+                    counterObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        const statsRow = document.querySelector('.bg-Server-card');
+        if (statsRow) counterObserver.observe(statsRow);
+
+        // 6. Accordion Logic
+        function toggleAccordion(button) {
+            const item = button.parentElement;
+            const isActive = item.classList.contains('active');
+            document.querySelectorAll('.accordion-item').forEach(i => i.classList.remove('active'));
+            if (!isActive) item.classList.add('active');
+        }
+    </script>
+</body>
+
+</html>

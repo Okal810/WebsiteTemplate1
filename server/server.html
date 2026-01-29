@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Status • Server</title>
+    <link rel="stylesheet" href="server.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="background-effects"></div>
+
+    <div class="dashboard-container">
+        <header>
+            <div class="brand">
+                <i class="fas fa-server"></i>
+                <span>Server <span class="highlight">SYSTEMS</span></span>
+            </div>
+            <a href="/" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Zurück zur Startseite
+            </a>
+        </header>
+
+        <main>
+            <div class="status-hero">
+                <div class="status-icon-wrapper">
+                    <div class="pulse-ring"></div>
+                    <div class="status-icon" id="main-status-icon">
+                        <i class="fas fa-power-off"></i>
+                    </div>
+                </div>
+                <h2 id="server-status-text">INITIALISIERUNG</h2>
+                <p class="status-sub">Echtzeit-Systemüberwachung</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="icon"><i class="fas fa-clock"></i></div>
+                    <div class="info">
+                        <span class="label">System Uptime</span>
+                        <span class="value" id="uptime">--:--:--</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon"><i class="fas fa-code-branch"></i></div>
+                    <div class="info">
+                        <span class="label">Software Version</span>
+                        <span class="value" id="version">v--</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon"><i class="fas fa-signal"></i></div>
+                    <div class="info">
+                        <span class="label">Latenz</span>
+                        <span class="value" id="ping">-- ms</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon"><i class="fas fa-users"></i></div>
+                    <div class="info">
+                        <span class="label">Aktive Bewerbungen</span>
+                        <span class="value" id="app-count">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="update-log-panel"
+                style="margin-top: 2rem; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1.5rem;">
+                <div class="m-header"
+                    style="display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; color: #fff;">
+                    <i class="fas fa-clipboard-list" style="color: #ff3333;"></i>
+                    <span style="font-weight: 700; font-family: 'Inter', sans-serif;">System Updates</span>
+                </div>
+
+                <div class="update-list" id="update-container"
+                    style="max-height: 400px; overflow-y: auto; padding-right: 10px;">
+                    <div style="text-align: center; color: #888; padding: 20px;">
+                        <i class="fas fa-spinner fa-spin"></i> Lade Updates...
+                    </div>
+                </div>
+            </div>
+
+            <div class="maintenance-panel">
+                <div class="m-header">
+                    <i class="fas fa-tools"></i>
+                    <span>Wartungsstatus</span>
+                </div>
+                <!-- Content will be toggled by JS if we implement maintenance mode later. For now default state. -->
+                <div class="m-content">
+                    <div class="border-l-2 border-Server-red pl-4 ml-2">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-bold text-white">v2.6.5</span>
+                            <span class="text-xs text-gray-500">27.01.2026</span>
+                        </div>
+                        <p class="text-sm text-gray-400">Refactoring Admin-Panel (Modular JS), Performance-Update (SQL
+                            Indices), N+1 Fixes, Moderation Tools (Warn/Unban UI), Public Deterrent Warnings.</p>
+                    </div>
+                    <div class="m-status-indicator">
+                        <div class="status-dot"></div>
+                        <span class="status-text">SYSTEME OPERATIONAL</span>
+                    </div>
+                    <p class="m-message">
+                        Alle Hintergrunddienste laufen stabil. Es sind keine geplanten Wartungsarbeiten für den heutigen
+                        Tag vorgesehen.
+                    </p>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="server.js"></script>
+</body>
+
+</html>

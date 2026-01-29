@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="de" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unser Team - Server</title>
+
+    <!-- Preconnect für schnelleres Laden -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts (async) -->
+    <link rel="preload" as="style"
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;600;700&family=Inter:wght@300;400;600&display=swap">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;600;700&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;600;700&family=Inter:wght@300;400;600&display=swap"
+            rel="stylesheet">
+    </noscript>
+
+    <!-- FontAwesome (async) -->
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    </noscript>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="team.css">
+
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        Server: {
+                            black: '#050505',
+                            dark: '#0f0f0f',
+                            card: '#161616',
+                            red: '#00CED1',
+                            red_dark: '#008B8B',
+                            gold: '#ffcc00',
+                            gold_dim: '#b38f00',
+                            purple: '#9b59b6',
+                            blue: '#3498db'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Orbitron', 'sans-serif'],
+                        tech: ['Rajdhani', 'sans-serif'],
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "url('https://www.transparenttextures.com/patterns/cubes.png')",
+                        'dots-pattern': "url('https://www.transparenttextures.com/patterns/stardust.png')",
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="antialiased selection:bg-Server-red selection:text-white bg-Server-black text-gray-200">
+
+    <!-- Navbar -->
+    <nav
+        class="fixed w-full z-50 py-4 border-b border-white/5 bg-Server-black/90 backdrop-blur-md transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
+            <!-- Logo -->
+            <a href="../startseite/startseite.html" class="flex items-center gap-3 group">
+                <span class="font-display font-bold text-2xl tracking-wider text-white">SERVER<span
+                        class="text-Server-red">NAME</span></span>
+            </a>
+
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center gap-8">
+                <a href="../startseite/startseite.html"
+                    class="font-tech text-lg font-medium text-gray-400 hover:text-white transition-colors uppercase tracking-wide">Start</a>
+                <a href="../karriere/index.html"
+                    class="font-tech text-lg font-medium text-gray-400 hover:text-white transition-colors uppercase tracking-wide">Karriere</a>
+                <span
+                    class="font-tech text-lg font-medium text-white border-b-2 border-Server-red uppercase tracking-wide cursor-default">Team</span>
+
+                <a href="../startseite/startseite.html#join"
+                    class="bg-Server-red hover:bg-Server-red_dark text-white px-6 py-2 rounded skew-x-[-10deg] font-display font-bold text-sm tracking-wider transition-all hover:scale-105 shadow-[0_0_20px_rgba(255,42,42,0.4)]">
+                    <span class="block skew-x-[10deg]">BEITRETEN</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="relative pt-40 pb-24 text-center overflow-hidden">
+        <div class="absolute inset-0 bg-grid-pattern opacity-5 z-0"></div>
+        <div class="absolute inset-0 bg-dots-pattern opacity-20 animate-pulse z-0"></div>
+        <div
+            class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-Server-red/10 rounded-full blur-[120px] -z-10">
+        </div>
+
+        <div class="container mx-auto px-4 relative z-10">
+            <div
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-md mb-8 animate-float">
+                <i class="fas fa-users text-Server-red text-xs"></i>
+                <span class="font-tech text-gray-300 text-sm font-bold tracking-[0.2em] uppercase">Meet the Staff</span>
+            </div>
+
+            <h1 class="font-display text-5xl md:text-7xl lg:text-8xl font-black mb-6 reveal">
+                DIE <span class="text-white glow-text-red">KÖPFE</span><br>
+                HINTER DEM <span class="text-Server-gold glow-text-gold">PROJEKT</span>
+            </h1>
+            <p class="text-gray-400 font-tech text-xl md:text-2xl max-w-3xl mx-auto reveal delay-100 leading-relaxed">
+                Leidenschaft, Dedikation und eine Vision. <br>Das ist das Team von Server Name.
+            </p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 pb-32 space-y-24">
+
+        <!-- Creators -->
+        <section class="reveal delay-200 relative">
+            <div
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-4xl bg-Server-gold/5 blur-[100px] -z-10 rounded-full">
+            </div>
+
+            <div class="text-center mb-12">
+                <h2 class="font-display text-3xl font-bold text-white mb-2">FOUNDERS & <span
+                        class="text-Server-gold">CREATORS</span></h2>
+                <div class="w-24 h-1 bg-Server-gold mx-auto rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <!-- Founder 1 -->
+                <div
+                    class="group relative p-10 rounded-3xl bg-Server-card/80 backdrop-blur-sm border border-Server-gold/20 hover:border-Server-gold transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_0_30px_rgba(255,204,0,0.15)] overflow-hidden">
+                    <div
+                        class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-Server-gold/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    </div>
+
+                    <div class="relative z-10 flex flex-col items-center">
+                        <div
+                            class="w-40 h-40 rounded-full p-1 bg-gradient-to-br from-Server-gold to-Server-gold_dim mb-8 shadow-[0_0_40px_rgba(255,204,0,0.2)] group-hover:shadow-[0_0_60px_rgba(255,204,0,0.5)] group-hover:scale-105 transition-all duration-500">
+                            <div
+                                class="w-full h-full rounded-full bg-Server-black flex items-center justify-center border-4 border-Server-card">
+                                <i class="fas fa-user-tie text-5xl text-Server-gold"></i>
+                            </div>
+                        </div>
+                        <h3 class="font-display text-3xl font-bold text-white mb-2">Founder Name</h3>
+                        <span
+                            class="px-4 py-1 rounded-full bg-Server-gold/10 border border-Server-gold/30 text-Server-gold font-tech uppercase tracking-widest text-sm font-bold mb-4">Creator</span>
+                        <p class="text-gray-400 text-center text-base leading-relaxed">Description of the founder's role
+                            and responsibilities.</p>
+                    </div>
+                </div>
+
+                <!-- Founder 2 -->
+                <div
+                    class="group relative p-10 rounded-3xl bg-Server-card/80 backdrop-blur-sm border border-Server-gold/20 hover:border-Server-gold transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_0_30px_rgba(255,204,0,0.15)] overflow-hidden">
+                    <div
+                        class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-Server-gold/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    </div>
+
+                    <div class="relative z-10 flex flex-col items-center">
+                        <div
+                            class="w-40 h-40 rounded-full p-1 bg-gradient-to-br from-Server-gold to-Server-gold_dim mb-8 shadow-[0_0_40px_rgba(255,204,0,0.2)] group-hover:shadow-[0_0_60px_rgba(255,204,0,0.5)] group-hover:scale-105 transition-all duration-500">
+                            <div
+                                class="w-full h-full rounded-full bg-Server-black flex items-center justify-center border-4 border-Server-card">
+                                <i class="fas fa-code text-5xl text-Server-gold"></i>
+                            </div>
+                        </div>
+                        <h3 class="font-display text-3xl font-bold text-white mb-2">Dev Name</h3>
+                        <span
+                            class="px-4 py-1 rounded-full bg-Server-gold/10 border border-Server-gold/30 text-Server-gold font-tech uppercase tracking-widest text-sm font-bold mb-4">Developer</span>
+                        <p class="text-gray-400 text-center text-base leading-relaxed">Description of technical
+                            responsibilities and development.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Co-Creator -->
+        <section class="reveal">
+            <div class="text-center mb-12">
+                <h2 class="font-display text-2xl font-bold text-white mb-2">CO-<span
+                        class="text-Server-purple">MANAGEMENT</span></h2>
+                <div class="w-16 h-1 bg-Server-purple mx-auto rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div
+                    class="group relative p-8 rounded-3xl bg-Server-card/80 backdrop-blur-sm border border-Server-purple/20 hover:border-Server-purple transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_0_30px_rgba(155,89,182,0.15)] overflow-hidden">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-b from-Server-purple/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl">
+                    </div>
+                    <div class="relative z-10 flex flex-col items-center">
+                        <div
+                            class="w-32 h-32 rounded-full p-1 bg-gradient-to-br from-Server-purple to-purple-900 mb-6 shadow-[0_0_30px_rgba(155,89,182,0.3)] group-hover:shadow-[0_0_50px_rgba(155,89,182,0.5)] group-hover:scale-105 transition-all duration-500">
+                            <div
+                                class="w-full h-full rounded-full bg-Server-black flex items-center justify-center border-4 border-Server-card">
+                                <i class="fas fa-user text-4xl text-Server-purple"></i>
+                            </div>
+                        </div>
+                        <h3 class="font-display text-2xl font-bold text-white mb-1">Manager Name</h3>
+                        <span
+                            class="font-tech text-Server-purple uppercase tracking-widest text-sm font-bold mb-4">Co-Creator</span>
+                        <p class="text-gray-400 text-center text-sm leading-relaxed">Manager description goes here.</p>
+                    </div>
+                </div>
+
+                <!-- Manager 2 -->
+                <div
+                    class="group relative p-8 rounded-3xl bg-Server-card/80 backdrop-blur-sm border border-Server-purple/20 hover:border-Server-purple transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_0_30px_rgba(155,89,182,0.15)] overflow-hidden">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-b from-Server-purple/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl">
+                    </div>
+                    <div class="relative z-10 flex flex-col items-center">
+                        <div
+                            class="w-32 h-32 rounded-full p-1 bg-gradient-to-br from-Server-purple to-purple-900 mb-6 shadow-[0_0_30px_rgba(155,89,182,0.3)] group-hover:shadow-[0_0_50px_rgba(155,89,182,0.5)] group-hover:scale-105 transition-all duration-500">
+                            <div
+                                class="w-full h-full rounded-full bg-Server-black flex items-center justify-center border-4 border-Server-card">
+                                <i class="fas fa-user text-4xl text-Server-purple"></i>
+                            </div>
+                        </div>
+                        <h3 class="font-display text-2xl font-bold text-white mb-1">Manager Name</h3>
+                        <span
+                            class="font-tech text-Server-purple uppercase tracking-widest text-sm font-bold mb-4">Co-Creator</span>
+                        <p class="text-gray-400 text-center text-sm leading-relaxed">Manager description goes here.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Project Lead -->
+        <section class="reveal">
+            <div class="text-center mb-12">
+                <h2 class="font-display text-2xl font-bold text-white mb-2">PROJECT <span
+                        class="text-Server-red">LEAD</span></h2>
+                <div class="w-16 h-1 bg-Server-red mx-auto rounded-full"></div>
+            </div>
+
+            <div class="max-w-md mx-auto">
+                <div
+                    class="group relative p-8 rounded-3xl bg-Server-card/80 backdrop-blur-sm border border-Server-red/20 hover:border-Server-red transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_0_30px_rgba(255,42,42,0.15)] overflow-hidden">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-b from-Server-red/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl">
+                    </div>
+                    <div class="relative z-10 flex flex-col items-center">
+                        <div
+                            class="w-32 h-32 rounded-full p-1 bg-gradient-to-br from-Server-red to-red-900 mb-6 shadow-[0_0_30px_rgba(255,42,42,0.3)] group-hover:shadow-[0_0_50px_rgba(255,42,42,0.5)] group-hover:scale-105 transition-all duration-500">
+                            <div
+                                class="w-full h-full rounded-full bg-Server-black flex items-center justify-center border-4 border-Server-card">
+                                <i class="fas fa-users-cog text-4xl text-Server-red"></i>
+                            </div>
+                        </div>
+                        <h3 class="font-display text-2xl font-bold text-white mb-1">Lead Name</h3>
+                        <span class="font-tech text-Server-red uppercase tracking-widest text-sm font-bold mb-4">Project
+                            Lead</span>
+                        <p class="text-gray-400 text-center text-sm leading-relaxed">Coordination of staff and strategic
+                            planning.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Team Gallery (Group Pictures) -->
+        <section class="reveal pt-12">
+            <div class="text-center mb-12">
+                <span
+                    class="font-tech text-Server-blue font-bold tracking-widest uppercase text-sm mb-2 block">Community
+                    &
+                    Team</span>
+                <h2 class="font-display text-4xl font-bold text-white mb-6">EINBLICKE INS <span
+                        class="text-Server-blue">TEAMLEBEN</span></h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">
+                    Wir sind mehr als nur Admins. Wir sind eine Gemeinschaft. Hier sind einige Momente unserer
+                    gemeinsamen Zeit.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Gallery Item 1 -->
+                <div class="group relative aspect-video rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+                    <div class="w-full h-full bg-Server-card flex items-center justify-center">
+                        <i class="fas fa-images text-6xl text-Server-blue opacity-50"></i>
+                    </div>
+                    <div
+                        class="absolute inset-0 bg-gradient-to-t from-Server-black via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity">
+                    </div>
+                    <div
+                        class="absolute bottom-0 left-0 p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                        <span
+                            class="px-3 py-1 bg-Server-blue/20 border border-Server-blue/50 rounded text-Server-blue text-xs font-bold uppercase tracking-wider backdrop-blur-sm">Event</span>
+                        <h3 class="text-white font-display font-bold text-xl mt-2">Moment Aufnahme</h3>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 2 -->
+                <div class="group relative aspect-video rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+                    <div class="w-full h-full bg-Server-card flex items-center justify-center">
+                        <i class="fas fa-camera text-6xl text-Server-purple opacity-50"></i>
+                    </div>
+                    <div
+                        class="absolute inset-0 bg-gradient-to-t from-Server-black via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity">
+                    </div>
+                    <div
+                        class="absolute bottom-0 left-0 p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                        <span
+                            class="px-3 py-1 bg-Server-purple/20 border border-Server-purple/50 rounded text-Server-purple text-xs font-bold uppercase tracking-wider backdrop-blur-sm">Patrouille</span>
+                        <h3 class="text-white font-display font-bold text-xl mt-2">Gemeinsamer Dienst</h3>
+                    </div>
+                </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-black border-t border-white/10 pt-16 pb-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div class="col-span-1 md:col-span-2">
+                    <h3 class="font-display text-3xl font-bold text-white mb-4">Server <span
+                            class="text-Server-red">SERVER</span></h3>
+                    <p class="text-gray-500 max-w-md mb-6">
+                        Der führende deutsche Roleplay Server für Emergency Response: Liberty County. Wir bieten
+                        Qualität, Stabilität und eine unvergleichliche Community.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="#"
+                            class="w-10 h-10 rounded bg-gray-900 flex items-center justify-center text-gray-400 hover:text-white hover:bg-Server-red transition-all"><i
+                                class="fab fa-twitter"></i></a>
+                        <a href="#"
+                            class="w-10 h-10 rounded bg-gray-900 flex items-center justify-center text-gray-400 hover:text-white hover:bg-Server-red transition-all"><i
+                                class="fab fa-youtube"></i></a>
+                        <a href="#"
+                            class="w-10 h-10 rounded bg-gray-900 flex items-center justify-center text-gray-400 hover:text-white hover:bg-Server-red transition-all"><i
+                                class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-white mb-4 uppercase tracking-wider">Links</h4>
+                    <ul class="space-y-2 text-gray-500">
+                        <li><a href="../startseite/startseite.html"
+                                class="hover:text-Server-gold transition-colors">Startseite</a></li>
+                        <li><a href="../startseite/startseite.html#rules"
+                                class="hover:text-Server-gold transition-colors">Regelwerk</a></li>
+                        <li><a href="#" class="text-Server-red font-bold cursor-default">Team</a></li>
+                        <li><a href="../help/help.html" class="hover:text-Server-gold transition-colors">Hilfe</a></li>
+                        <li><a href="/server/server.html" class="hover:text-Server-red transition-colors">System
+                                Status</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-white mb-4 uppercase tracking-wider">Rechtliches</h4>
+                    <ul class="space-y-2 text-gray-500">
+                        <li><a href="../rechtliches/impressum.html"
+                                class="hover:text-white transition-colors">Impressum</a>
+                        </li>
+                        <li><a href="../rechtliches/datenschutz.html"
+                                class="hover:text-white transition-colors">Datenschutz</a></li>
+                        <li><a href="../rechtliches/nutzungsbedingungen.html"
+                                class="hover:text-white transition-colors">Nutzungsbedingungen</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div
+                class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-600">
+                <p>&copy; 2025 Server Name. Alle Rechte vorbehalten.</p>
+                <p>Not affiliated with Roblox Corporation or Police Roleplay Community.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="team.js"></script>
+</body>
+
+</html>

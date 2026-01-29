@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Project specific
+data/
+admin_credentials.txt
+xstream/uploads/
+
+# IDE
+.vscode/
+.idea/
+.cursor/
+.cursorignore
+.cursorindexingignore
+
+# Logs and Databases
+logs/
+*.log
+*.db
+instance/

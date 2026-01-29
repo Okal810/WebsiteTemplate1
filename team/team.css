@@ -1,0 +1,20 @@
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #0f0f0f; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #00CED1; }
+
+/* Neon Glows */
+.glow-text-red { text-shadow: 0 0 15px rgba(0, 206, 209, 0.6); }
+.glow-text-gold { text-shadow: 0 0 15px rgba(255, 204, 0, 0.6); }
+
+/* Reveal Animation */
+.reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+}
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}

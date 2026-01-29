@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CSRF Token Meta Tag -->
+    <meta name="csrf-token" content="">
+    <title>Forum - Server Server Name</title>
+
+    <!-- Preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preload" as="style"
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;600;700&family=Inter:wght@300;400;600&display=swap">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;600;700&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet" media="print" onload="this.media='all'">
+
+    <!-- FontAwesome -->
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        media="print" onload="this.media='all'">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        Server: { black: '#050505', dark: '#0f0f0f', card: '#161616', red: '#00CED1', gold: '#ffcc00' }
+                    },
+                    fontFamily: {
+                        display: ['Orbitron', 'sans-serif'],
+                        tech: ['Rajdhani', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="forum.css">
+</head>
+
+<body class="text-gray-300 min-h-screen">
+
+    <!-- NAVIGATION -->
+    <nav class="fixed w-full z-50 py-4 border-b border-white/5 bg-Server-black/90 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
+            <a href="../startseite/startseite.html" class="flex items-center gap-3 group">
+                <span class="font-display font-bold text-2xl tracking-wider text-white">Server<span
+                        class="text-Server-red">FORUM</span></span>
+            </a>
+
+            <div class="flex items-center gap-6">
+                <a href="../startseite/startseite.html"
+                    class="font-tech text-gray-400 hover:text-white transition-colors uppercase">Startseite</a>
+                <a href="../help/help.html"
+                    class="font-tech text-gray-400 hover:text-white transition-colors uppercase">Hilfe</a>
+                <button id="mod-toggle-btn" onclick="toggleModMode()" style="display: none;"
+                    class="bg-white/5 text-gray-400 hover:bg-red-600 hover:text-white px-4 py-2 rounded font-tech font-bold text-sm tracking-wider transition-all border border-white/10"
+                    title="Moderationsmodus">
+                    <i class="fas fa-shield-alt mr-2"></i>MOD
+                </button>
+                <button onclick="openNewPostModal()"
+                    class="bg-Server-red hover:bg-red-700 text-white px-5 py-2 rounded font-display font-bold text-sm tracking-wider transition-all">
+                    <i class="fas fa-plus mr-2"></i>FRAGE STELLEN
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="pt-24 pb-16 px-6">
+        <div class="max-w-4xl mx-auto">
+
+            <!-- HEADER -->
+            <div class="text-center mb-12">
+                <h1 class="font-display text-4xl md:text-5xl font-bold text-white mb-4">
+                    COMMUNITY <span class="text-Server-red">FORUM</span>
+                </h1>
+                <p class="text-gray-400 font-tech text-lg">
+                    Stelle Fragen, teile dein Wissen und hilf anderen Spielern.
+                </p>
+            </div>
+
+            <!-- SEARCH BAR -->
+            <div class="mb-8">
+                <div class="relative max-w-2xl mx-auto">
+                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                    <input type="text" id="search-input" placeholder="Suche nach Themen..."
+                        class="w-full bg-Server-card border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white placeholder-gray-500 focus:border-Server-red focus:outline-none transition-colors">
+                </div>
+                <!-- New Posts Badge -->
+                <div id="new-posts-badge" onclick="mergeNewPosts()"
+                    class="hidden max-w-md mx-auto mt-4 bg-Server-red/20 border border-Server-red/50 text-Server-red text-center py-2 rounded-lg cursor-pointer hover:bg-Server-red/30 transition-all font-tech font-bold text-sm">
+                    <i class="fas fa-sync-alt mr-2"></i> <span>0 neue Beiträge</span>
+                </div>
+            </div>
+
+            <!-- POSTS CONTAINER -->
+            <div id="posts-container" class="space-y-4">
+                <!-- Posts werden hier dynamisch geladen -->
+            </div>
+
+            <!-- EMPTY STATE -->
+            <div id="empty-state" class="hidden text-center py-16">
+                <i class="fas fa-comments text-6xl text-gray-700 mb-4"></i>
+                <h3 class="font-display text-xl text-gray-400 mb-2">Noch keine Beiträge</h3>
+                <p class="text-gray-500 mb-6">Sei der Erste, der eine Frage stellt!</p>
+                <button onclick="openNewPostModal()"
+                    class="bg-Server-red hover:bg-red-700 text-white px-6 py-3 rounded font-display font-bold transition-all">
+                    <i class="fas fa-plus mr-2"></i>Frage stellen
+                </button>
+            </div>
+
+            <!-- LOADING STATE -->
+            <div id="loading-state" class="text-center py-16">
+                <i class="fas fa-spinner fa-spin text-4xl text-Server-red mb-4"></i>
+                <p class="text-gray-400">Lade Beiträge...</p>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- NEW POST MODAL -->
+    <div id="new-post-modal"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-Server-card border border-white/10 rounded-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-white/10 flex justify-between items-center">
+                <h2 class="font-display text-xl font-bold text-white">Neue Frage stellen</h2>
+                <button onclick="closeNewPostModal()" class="text-gray-400 hover:text-white text-xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-tech text-gray-400 mb-2 uppercase tracking-wider">Dein Name</label>
+                    <input type="text" id="post-author" placeholder="Anonym"
+                        class="w-full bg-black/30 border border-white/10 rounded-lg py-3 px-4 text-white placeholder-gray-500 focus:border-Server-red focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-tech text-gray-400 mb-2 uppercase tracking-wider">Titel *</label>
+                    <input type="text" id="post-title" placeholder="Kurze Frage oder Thema..."
+                        class="w-full bg-black/30 border border-white/10 rounded-lg py-3 px-4 text-white placeholder-gray-500 focus:border-Server-red focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-tech text-gray-400 mb-2 uppercase tracking-wider">Beschreibung
+                        *</label>
+                    <textarea id="post-content" rows="5" placeholder="Beschreibe deine Frage ausführlich..."
+                        class="w-full bg-black/30 border border-white/10 rounded-lg py-3 px-4 text-white placeholder-gray-500 focus:border-Server-red focus:outline-none resize-none"></textarea>
+                </div>
+                <div id="post-error"
+                    class="hidden bg-red-500/20 border border-red-500/50 rounded-lg p-3 text-red-400 text-sm">
+                </div>
+                <button onclick="submitPost()" id="submit-post-btn"
+                    class="w-full bg-Server-red hover:bg-red-700 text-white py-3 rounded-lg font-display font-bold transition-all">
+                    <i class="fas fa-paper-plane mr-2"></i>Absenden
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POST DETAIL MODAL -->
+    <div id="post-detail-modal"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-Server-card border border-white/10 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-white/10 flex justify-between items-center">
+                <h2 id="detail-title" class="font-display text-xl font-bold text-white"></h2>
+                <button onclick="closePostDetailModal()" class="text-gray-400 hover:text-white text-xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-full bg-Server-red/20 flex items-center justify-center">
+                        <i class="fas fa-user text-Server-red"></i>
+                    </div>
+                    <div>
+                        <span id="detail-author" class="font-bold text-white"></span>
+                        <span id="detail-time" class="text-gray-500 text-sm ml-2"></span>
+                    </div>
+                </div>
+                <p id="detail-content" class="text-gray-300 leading-relaxed mb-6 whitespace-pre-wrap"></p>
+
+                <!-- COMMENTS SECTION -->
+                <div class="border-t border-white/10 pt-6">
+                    <h3 class="font-display text-lg font-bold text-white mb-4">
+                        <i class="fas fa-comments text-Server-gold mr-2"></i>Antworten
+                    </h3>
+                    <div id="comments-container" class="space-y-4 mb-6">
+                        <!-- Kommentare werden hier geladen -->
+                    </div>
+
+                    <!-- ADD COMMENT -->
+                    <div class="bg-black/30 rounded-xl p-4">
+                        <input type="text" id="comment-author" placeholder="Dein Name (optional)"
+                            class="w-full bg-transparent border-b border-white/10 py-2 mb-3 text-white placeholder-gray-500 focus:border-Server-red focus:outline-none">
+                        <textarea id="comment-content" rows="3" placeholder="Schreibe eine Antwort..."
+                            class="w-full bg-transparent border-none text-white placeholder-gray-500 focus:outline-none resize-none"></textarea>
+                        <div id="comment-error"
+                            class="hidden bg-red-500/20 border border-red-500/50 rounded-lg p-2 text-red-400 text-sm mb-3">
+                        </div>
+                        <button onclick="submitComment()" id="submit-comment-btn"
+                            class="bg-Server-gold hover:bg-yellow-600 text-black py-2 px-4 rounded font-bold text-sm transition-all">
+                            <i class="fas fa-reply mr-2"></i>Antworten
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-black border-t border-white/10 py-8">
+        <div class="container mx-auto px-4 text-center text-gray-600 text-sm">
+            <p>&copy; 2025 Server Name. Alle Rechte vorbehalten.</p>
+        </div>
+    </footer>
+
+    <!-- CSRF Token Initializer -->
+    <script>
+            (async function () {
+                try {
+                    const response = await fetch('/api/csrf-token');
+                    const data = await response.json();
+                    if (data.token) {
+                        document.querySelector('meta[name="csrf-token"]').setAttribute('content', data.token);
+                        console.log('✅ CSRF Token initialized');
+                    }
+                } catch (e) {
+                    console.error('Failed to initialize CSRF token:', e);
+                }
+            })();
+    </script>
+    <!-- Deterrent Warning (Dynamic) -->
+    <div id="warning-box"
+        class="hidden fixed bottom-4 left-4 z-50 bg-Server-card border-l-4 border-Server-red p-4 rounded shadow-lg max-w-sm animate-pulse-slow pointer-events-none select-none opacity-80 hover:opacity-100 transition-opacity">
+        <div class="flex items-start gap-3">
+            <i class="fas fa-exclamation-circle text-Server-red text-xl mt-0.5"></i>
+            <div>
+                <h4 class="font-display font-bold text-white text-sm uppercase">Warnung</h4>
+                <p class="font-tech text-xs text-gray-400 mt-1" id="warning-text">
+                    Halte dich an die Regeln! Verstöße (Spam, Trolling) führen zum sofortigen <span
+                        class="text-Server-red font-bold">IP-Ban</span>.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Warning Status Checker -->
+    <script>
+        (async function checkWarningStatus() {
+            try {
+                const response = await fetch('/api/warning-status');
+                const data = await response.json();
+
+                if (data.is_banned || data.has_warnings) {
+                    const warningBox = document.getElementById('warning-box');
+                    const warningText = document.getElementById('warning-text');
+
+                    if (data.is_banned) {
+                        warningText.innerHTML = `Du wurdest <span class="text-Server-red font-bold">IP-gebannt</span>. Grund: ${data.ban_reason || 'Regelverstoß'}`;
+                    } else if (data.warning_count >= 3) {
+                        warningText.innerHTML = `Du hast <span class="text-Server-red font-bold">${data.warning_count} Verwarnungen</span>. Weitere Verstöße führen zum IP-Ban!`;
+                    } else {
+                        warningText.innerHTML = `Du hast <span class="text-yellow-500 font-bold">${data.warning_count} Verwarnung(en)</span>. Bitte halte dich an die Regeln!`;
+                    }
+
+                    warningBox.classList.remove('hidden');
+                }
+            } catch (e) {
+                console.error('Failed to check warning status:', e);
+            }
+        })();
+    </script>
+
+    <script src="forum.js"></script>
+</body>
+
+</html>
