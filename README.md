@@ -1,7 +1,7 @@
-# Server Systems v2.7.0 - Server Management Platform
+# Server Systems v2.8.0 - Server Management Platform
 
 ## Project Overview
-Server Systems is a secure, Flask-based administrative and moderation platform designed for server management. The system provides tools for application tracking, forum moderation, and real-time server status monitoring through a centralized dashboard. Version 2.7.0 introduces a major overhaul of the forum architecture with server-side pagination, optimized polling, and advanced code optimization.
+Server Systems is a secure, Flask-based administrative and moderation platform designed for server management. The system provides tools for application tracking, forum moderation, and real-time server status monitoring through a centralized dashboard. Version 2.8.0 introduces code quality improvements including the ApplicationDTO pattern, centralized validation configuration, and transaction-safe rate limiting.
 
 ## Core Features
 

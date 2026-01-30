@@ -629,6 +629,48 @@
         </div>
     </footer>
 
+    <!-- Deterrent Warning (Dynamic) -->
+    <div id="warning-box"
+        class="hidden fixed bottom-4 left-4 z-50 bg-Server-card border-l-4 border-Server-red p-4 rounded shadow-lg max-w-sm animate-pulse-slow pointer-events-none select-none opacity-80 hover:opacity-100 transition-opacity">
+        <div class="flex items-start gap-3">
+            <i class="fas fa-exclamation-circle text-Server-red text-xl mt-0.5"></i>
+            <div>
+                <h4 class="font-display font-bold text-white text-sm uppercase">Warnung</h4>
+                <p class="font-tech text-xs text-gray-400 mt-1" id="warning-text">
+                    LETZTE WARNUNG: Halte dich an die Regeln! Verstöße führen zum gnadenlosen <span
+                        class="text-Server-red font-bold">IP-BAN</span>.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Warning Status Checker -->
+    <script>
+            (async function checkWarningStatus() {
+                try {
+                    const response = await fetch('/api/warning-status');
+                    const data = await response.json();
+
+                    if (data.is_banned || data.has_warnings) {
+                        const warningBox = document.getElementById('warning-box');
+                        const warningText = document.getElementById('warning-text');
+
+                        if (data.is_banned) {
+                            warningText.innerHTML = `SYSTEM-BAN: Du wurdest permanent/temporär <span class="text-Server-red font-bold">IP-GEBANNT</span>! Grund: ${data.ban_reason || 'Regelverstoß'}`;
+                        } else if (data.warning_count >= 2) {
+                            warningText.innerHTML = `PASS AUF! Du hast <span class="text-Server-red font-bold">${data.warning_count} Verwarnungen</span>. Noch ein Fehler und du bist weg!`;
+                        } else {
+                            warningText.innerHTML = `WARNUNG: Du hast <span class="text-yellow-500 font-bold">${data.warning_count} Verwarnung(en)</span>. Ein weiterer Verstoß führt zum IP-Ban!`;
+                        }
+
+                        warningBox.classList.remove('hidden');
+                    }
+                } catch (e) {
+                    console.error('Failed to check warning status:', e);
+                }
+            })();
+    </script>
+
     <!-- Scripts -->
     <script>
         // 1. Loader Logic

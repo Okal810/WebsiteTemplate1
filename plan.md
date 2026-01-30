@@ -48,3 +48,11 @@ async function blacklistIP(ipHash, reason, hours) {
 ├─────────────────────────────────────┤
 │ 9. Audit Log: Wer hat was gemacht?  │ ← Compliance
 └─────────────────────────────────────┘
+
+
+2. **Backend Optimierung (SQLAlchemy):**
+   - Indizes auf `timestamp` und `status` setzen für schnelleres Polling.
+   - Delta-Polling implementieren (nur neue Daten laden).
+3. **Frontend Refactoring (Admin Panel):**
+   - Aufsplittung in ES Modules (`auth.js`, `dashboard.js`, `moderation.js`).
+   - Lazy Loading für Mod-Tools (werden nur geladen, wenn User = Admin).

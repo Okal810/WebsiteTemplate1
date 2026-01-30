@@ -51,6 +51,7 @@ graph TD
         Auth[utils/admin_auth.py]
         Logger[utils/logger.py]
         Roblox[utils/roblox.py]
+        ValidationConfig[utils/validation_config.py]
     end
 
     %% Internal Dependencies
@@ -93,13 +94,15 @@ The backend is built with **Flask** and structured into modular blueprints.
         *   **CSRF**: Generates and distributes unique CSRF tokens for form security.
         *   **Roblox Integration**: Resolves Roblox usernames via API.
 
-*   **`applications.py`** (Assumed based on naming)
+*   **`applications.py`**
     *   **Function**: Career/Application system.
-    *   **Responsibility**: Handles incoming job applications, validates user input, and stores them in the `Application` database model.
+    *   **Responsibility**: Handles incoming job applications using the `ApplicationDTO` pattern for clean data handling. Uses `ValidationConfig` for centralized validation constants.
+    *   **Patterns**: ApplicationDTO, helper function extraction, `@require_admin` decorator for admin endpoints.
 
-*   **`forum.py`** (Assumed based on naming)
+*   **`forum.py`**
     *   **Function**: Community Forum.
-    *   **Responsibility**: Manages threads, posts, and comments. Likely integrates with `utils/moderation.py` to filter content.
+    *   **Responsibility**: Manages posts and comments with transaction-safe rate limiting (applied after successful validation). Uses `@require_admin` decorator for moderation endpoints.
+    *   **Note**: In-memory rate limits are volatile. For production multi-server deployments, Redis integration is prepared but commented out.
 
 *   **`admin.py`** (Assumed based on naming)
     *   **Function**: Administration Panel.
@@ -110,10 +113,11 @@ The backend is built with **Flask** and structured into modular blueprints.
 *   **`security.py`**
     *   **Function**: Security Enforcer.
     *   **Responsibility**:
-        *   **CSRF Protection**: Generates and validates cryptographic tokens bound to IP addresses to prevent Cross-Site Request Forgery.
-        *   **Rate Limiting**: Implements adaptive rate limits (stricter for guests, looser for admins) to prevent DoS attacks.
-        *   **Session Validation**: Verifies `X-Session-Token` for admin actions, ensuring sessions haven't expired or been hijacked from a different IP.
-        *   **IP Hashing**: Anonymizes user IP addresses before storage for privacy compliance (`sha256`).
+        *   **CSRF Protection**: Generates and validates cryptographic tokens bound to IP addresses.
+        *   **Rate Limiting**: Implements adaptive rate limits with `@rate_limit` decorator.
+        *   **Session Validation**: Validates admin sessions with caching for performance.
+        *   **`@require_admin` Decorator**: Eliminates duplicate auth checks across admin endpoints.
+        *   **IP Hashing**: Anonymizes user IP addresses using SHA-256.
 
 *   **`admin_auth.py`**
     *   **Function**: Authentication Logic.
@@ -121,7 +125,11 @@ The backend is built with **Flask** and structured into modular blueprints.
 
 *   **`sanitize.py`**
     *   **Function**: Input Sanitization.
-    *   **Responsibility**: Cleanses user input to prevent Injection attacks (SQLi) or XSS payloads before data enters the system.
+    *   **Responsibility**: Cleanses user input to prevent Injection attacks (SQLi) or XSS payloads.
+
+*   **`validation_config.py`**
+    *   **Function**: Centralized Configuration.
+    *   **Responsibility**: Defines all validation constants (min/max lengths, patterns, rate limits) in one place. Eliminates magic numbers and ensures consistency across the codebase.
 
 ## Data & Validation Flow
 

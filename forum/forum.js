@@ -45,6 +45,7 @@ function setupEventDelegation() {
         const ip = btn.dataset.ip;
 
         if (action === 'ban') banUser(ip);
+        if (action === 'warn') warnUser(ip);
         if (action === 'delete-post') deletePost(id);
     });
 }
@@ -193,6 +194,10 @@ function renderPosts(posts, meta) {
             ${isModMode ? `
                 <div class="absolute top-4 right-4 flex gap-2 z-10">
                     ${post.ip_hash ? `
+                    <button data-action="warn" data-ip="${post.ip_hash}" 
+                        class="w-8 h-8 bg-gray-800 hover:bg-yellow-600 hover:text-black rounded-full flex items-center justify-center text-gray-400 text-sm transition-colors border border-white/10" title="Benutzer verwarnen">
+                        <i class="fas fa-exclamation-triangle pointer-events-none"></i>
+                    </button>
                     <button data-action="ban" data-ip="${post.ip_hash}" 
                         class="w-8 h-8 bg-gray-800 hover:bg-red-900 hover:text-white rounded-full flex items-center justify-center text-gray-400 text-sm transition-colors border border-white/10" title="Benutzer sperren">
                         <i class="fas fa-ban pointer-events-none"></i>
@@ -384,6 +389,10 @@ function renderComments(comments) {
                 ${isModMode ? `
                     <div class="flex gap-1">
                         ${comment.ip_hash ? `
+                        <button onclick="warnUser('${comment.ip_hash}')" 
+                            class="w-6 h-6 bg-gray-800 hover:bg-yellow-600 hover:text-black rounded flex items-center justify-center text-gray-400 text-xs transition-all border border-white/10" title="Benutzer verwarnen">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </button>
                         <button onclick="banUser('${comment.ip_hash}')" 
                             class="w-6 h-6 bg-gray-800 hover:bg-red-900 hover:text-white rounded flex items-center justify-center text-gray-400 text-xs transition-all border border-white/10" title="Benutzer sperren">
                             <i class="fas fa-ban"></i>
@@ -588,6 +597,44 @@ async function deleteComment(commentId) {
         }
     } catch (error) {
         showToast('Verbindungsfehler', 'error');
+    }
+}
+
+// Moderation: Warn User
+async function warnUser(ipHash) {
+    if (!ipHash) return;
+
+    const reason = prompt("Grund für die Verwarnung:", "Fehlverhalten im Forum");
+    if (!reason) return;
+
+    try {
+        const response = await fetch('/api/admin/warn', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                ip_hash: ipHash,
+                reason: reason
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            showToast(data.error || 'Fehler beim Verwarnen', 'error');
+            return;
+        }
+
+        if (data.auto_blocked) {
+            showToast(`Benutzer verwarnt und automatisch gesperrt! (Limit erreicht)`, 'success');
+        } else {
+            showToast(`Benutzer erfolgreich verwarnt! (Warnungen: ${data.warning_count})`, 'success');
+        }
+
+    } catch (error) {
+        console.error("Warn Error:", error);
+        showToast('Verbindungsfehler bei der Verwarnung', 'error');
     }
 }
 

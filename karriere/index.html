@@ -556,8 +556,8 @@
             <div>
                 <h4 class="font-display font-bold text-white text-sm uppercase">Warnung</h4>
                 <p class="font-tech text-xs text-gray-400 mt-1" id="warning-text">
-                    Halte dich an die Regeln! Verstöße (Spam, Trolling) führen zum sofortigen <span
-                        class="text-Server-red font-bold">IP-Ban</span>.
+                    LETZTE WARNUNG: Halte dich an die Regeln! Verstöße führen zum gnadenlosen <span
+                        class="text-Server-red font-bold">IP-BAN</span>.
                 </p>
             </div>
         </div>
@@ -575,11 +575,11 @@
                     const warningText = document.getElementById('warning-text');
 
                     if (data.is_banned) {
-                        warningText.innerHTML = `Du wurdest <span class="text-Server-red font-bold">IP-gebannt</span>. Grund: ${data.ban_reason || 'Regelverstoß'}`;
-                    } else if (data.warning_count >= 3) {
-                        warningText.innerHTML = `Du hast <span class="text-Server-red font-bold">${data.warning_count} Verwarnungen</span>. Weitere Verstöße führen zum IP-Ban!`;
+                        warningText.innerHTML = `SYSTEM-BAN: Du wurdest permanent/temporär <span class="text-Server-red font-bold">IP-GEBANNT</span>! Grund: ${data.ban_reason || 'Regelverstoß'}`;
+                    } else if (data.warning_count >= 2) {
+                        warningText.innerHTML = `PASS AUF! Du hast <span class="text-Server-red font-bold">${data.warning_count} Verwarnungen</span>. Noch ein Fehler und du bist weg!`;
                     } else {
-                        warningText.innerHTML = `Du hast <span class="text-yellow-500 font-bold">${data.warning_count} Verwarnung(en)</span>. Bitte halte dich an die Regeln!`;
+                        warningText.innerHTML = `WARNUNG: Du hast <span class="text-yellow-500 font-bold">${data.warning_count} Verwarnung(en)</span>. Ein weiterer Verstoß führt zum IP-Ban!`;
                     }
 
                     warningBox.classList.remove('hidden');

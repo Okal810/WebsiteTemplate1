@@ -1,74 +1,358 @@
+"""
+Application Routes - Refactored
+
+Handles application submissions and admin management.
+Uses ApplicationDTO for clean data handling and helper functions for maintainability.
+"""
+
 from flask import Blueprint, request, jsonify
 import time
 import re
+from uuid import uuid4
+from typing import Optional, Tuple, Dict, Any
+
 from app.config import DATA_FILE
-from app.utils.security import get_client_ip_hash, validate_csrf_token, validate_admin_session, RATE_LIMITS, limit_dict_size
+from app.utils.security import (
+    get_client_ip_hash, validate_csrf_token, require_admin,
+    RATE_LIMITS, limit_dict_size
+)
 from app.utils.moderation import (
-    is_ip_blacklisted, add_ip_warning, check_content_repetition, 
+    is_ip_blacklisted, add_ip_warning, check_content_repetition,
     looks_like_spam, check_duplicate_fields, check_semantic_similarity
 )
 from app.utils.sanitize import sanitize_input
 from app.utils.notifications import send_discord_notification
+from app.utils.validation_config import ValidationConfig
 from app.models import db, Application, IPWarning
 
 applications_bp = Blueprint('applications', __name__)
 
-def validate_application_data(data):
-    # Check age
-    try:
-        age = int(data.get('age', 0))
-        if age < 1 or age > 99:
-            return "Invalid age (1-99)."
-    except:
-        return "Age must be a number."
 
-    # Roblox User
-    roblox_user = data.get('roblox_user', '').strip()
-    if len(roblox_user) < 3 or len(roblox_user) > 20:
-        return "Roblox name must be 3-20 characters long."
+# =============================================================================
+# APPLICATION DATA TRANSFER OBJECT
+# =============================================================================
+
+class ApplicationDTO:
+    """
+    Data Transfer Object for application data.
     
-    if not re.match(r'^[a-zA-Z0-9_]+$', roblox_user):
-        return "Roblox name contains invalid characters (only letters, numbers, underscores)."
+    Handles sanitization, validation, and conversion to database model.
+    Single source of truth for application data handling.
+    """
+    
+    def __init__(self, request_data: Dict[str, Any]):
+        """Initialize with raw request data and sanitize."""
+        self.application_type = request_data.get('applicationType')
+        self.roblox_user = sanitize_input(request_data.get('roblox_user', ''))
+        self.discord_name = sanitize_input(request_data.get('discord_name', ''))
+        self.age = request_data.get('age')
+        self.about_me = sanitize_input(request_data.get('about_me', ''))
+        self.daily_time = sanitize_input(request_data.get('daily_time', ''))
+        self.motivation = sanitize_input(request_data.get('motivation', '')) if 'motivation' in request_data else None
+        self.timestamp = request_data.get('timestamp', time.time())
         
-    if looks_like_spam(roblox_user):
-        return "Please enter a real Roblox name."
-
-    # Discord Name
-    discord_name = data.get('discord_name', '').strip()
-    if len(discord_name) < 2 or len(discord_name) > 32:
-        return "Discord name must be 2-32 characters long."
+        # Bot detection fields
+        self.website_url = request_data.get('website_url')  # Honeypot
+        self.load_time = request_data.get('load_time', 0)
+        self.pasted_fields = request_data.get('pasted_fields', [])
+    
+    def validate(self) -> Optional[str]:
+        """
+        Validate all application data.
         
-    if looks_like_spam(discord_name):
-        return "Please enter a real Discord name."
-
-    # Text fields minimum length
-    about_me = data.get('about_me', '').strip()
-    if len(about_me) < 10:
-         return "Please write a bit more about yourself."
-         
-    if looks_like_spam(about_me):
-        return "Your text 'About me' was recognized as spam. Please write proper sentences."
+        Returns:
+            Error message if validation fails, None if valid
+        """
+        cfg = ValidationConfig
         
-    for field in ['motivation', 'why_us', 'strengths', 'weaknesses']:
-        if field in data:
-            val = str(data[field])
-            if looks_like_spam(val):
-                return f"Your text in '{field}' was recognized as spam."
+        # Age validation
+        try:
+            age = int(self.age) if self.age else 0
+            if age < cfg.MIN_AGE or age > cfg.MAX_AGE:
+                return f"Invalid age ({cfg.MIN_AGE}-{cfg.MAX_AGE})."
+        except (ValueError, TypeError):
+            return "Age must be a number."
+        
+        # Roblox username
+        if len(self.roblox_user) < cfg.MIN_ROBLOX_NAME_LENGTH or len(self.roblox_user) > cfg.MAX_ROBLOX_NAME_LENGTH:
+            return f"Roblox name must be {cfg.MIN_ROBLOX_NAME_LENGTH}-{cfg.MAX_ROBLOX_NAME_LENGTH} characters long."
+        
+        if not re.match(cfg.ROBLOX_NAME_PATTERN, self.roblox_user):
+            return "Roblox name contains invalid characters (only letters, numbers, underscores)."
+        
+        if looks_like_spam(self.roblox_user):
+            return "Please enter a real Roblox name."
+        
+        # Discord username
+        if len(self.discord_name) < cfg.MIN_DISCORD_NAME_LENGTH or len(self.discord_name) > cfg.MAX_DISCORD_NAME_LENGTH:
+            return f"Discord name must be {cfg.MIN_DISCORD_NAME_LENGTH}-{cfg.MAX_DISCORD_NAME_LENGTH} characters long."
+        
+        if looks_like_spam(self.discord_name):
+            return "Please enter a real Discord name."
+        
+        # About me
+        if len(self.about_me) < cfg.MIN_ABOUT_ME_LENGTH:
+            return "Please write a bit more about yourself."
+        
+        if len(self.about_me) > cfg.MAX_ABOUT_ME_LENGTH:
+            return f"About me is too long (Max {cfg.MAX_ABOUT_ME_LENGTH} characters)."
+        
+        if looks_like_spam(self.about_me):
+            return "Your text 'About me' was recognized as spam. Please write proper sentences."
+        
+        # Motivation (optional field)
+        if self.motivation:
+            if len(self.motivation) > cfg.MAX_ABOUT_ME_LENGTH:
+                return f"Motivation is too long (Max {cfg.MAX_ABOUT_ME_LENGTH} characters)."
+            if looks_like_spam(self.motivation):
+                return "Your text in 'motivation' was recognized as spam."
+        
+        return None
+    
+    def to_db_model(self, app_id: str, ip_hash: str) -> Application:
+        """Convert DTO to database model."""
+        return Application(
+            id=app_id,
+            application_type=self.application_type,
+            roblox_user=self.roblox_user,
+            discord_name=self.discord_name,
+            age=self.age,
+            about_me=self.about_me,
+            daily_time=self.daily_time,
+            motivation=self.motivation,
+            ip_hash=ip_hash,
+            timestamp=self.timestamp,
+            status='pending'
+        )
+    
+    def to_sanitized_dict(self) -> Dict[str, Any]:
+        """Return sanitized data as dictionary for duplicate checking."""
+        return {
+            'application_type': self.application_type,
+            'roblox_user': self.roblox_user,
+            'discord_name': self.discord_name,
+            'age': self.age,
+            'about_me': self.about_me,
+            'daily_time': self.daily_time,
+            'motivation': self.motivation
+        }
 
-    return None
+
+# =============================================================================
+# HELPER FUNCTIONS
+# =============================================================================
+
+def perform_security_checks(ip_hash: str) -> Tuple[bool, Optional[Dict]]:
+    """
+    Perform IP blacklist and CSRF validation.
+    
+    Returns:
+        Tuple of (is_blocked, error_response or None)
+    """
+    # Check IP blacklist
+    is_blocked, block_info = is_ip_blacklisted(ip_hash)
+    
+    if is_blocked:
+        if block_info.get('expires_at'):
+            hours_left = max(1, int((block_info['expires_at'] - time.time()) / 3600))
+            return True, {
+                'error': f'Your IP is temporarily blocked. Reason: {block_info.get("reason", "Rule violation")}. Block expires in approx. {hours_left} hours.'
+            }
+        else:
+            return True, {
+                'error': f'Your IP is permanently blocked. Reason: {block_info.get("reason", "Serious violation")}'
+            }
+    
+    # Validate CSRF token
+    csrf_token = request.headers.get('X-CSRF-Token')
+    if not validate_csrf_token(csrf_token):
+        return True, {'error': 'Access denied (Invalid or expired CSRF token).'}
+    
+    # NOTE: X-Requested-With header check removed.
+    # This header provides no real security as it can be trivially spoofed by attackers.
+    # Real protection comes from CSRF tokens and rate limiting.
+    # For actual API authentication, consider implementing JWT or API keys.
+    
+    return False, None
+
+
+def check_rate_limit(client_ip: str) -> Tuple[bool, Optional[Dict]]:
+    """
+    Check if client is rate limited.
+    
+    Returns:
+        Tuple of (is_limited, error_response or None)
+    """
+    current_time = time.time()
+    
+    if client_ip in RATE_LIMITS:
+        last_request_time = RATE_LIMITS[client_ip]
+        if current_time - last_request_time < ValidationConfig.RATE_LIMIT_SECONDS:
+            return True, {'error': 'Please wait a minute before submitting again.'}
+    
+    # Cleanup old entries (moved to start to prevent unbounded growth)
+    limit_dict_size(RATE_LIMITS, 10000)
+    
+    return False, None
+
+
+def perform_bot_detection(dto: ApplicationDTO, ip_hash: str) -> Tuple[bool, Optional[Dict]]:
+    """
+    Perform honeypot and timing-based bot detection.
+    
+    Returns:
+        Tuple of (is_bot, error_response or None)
+    """
+    current_time = time.time()
+    
+    # Honeypot check
+    if dto.website_url:
+        add_ip_warning(ip_hash, "Honeypot filled (Bot-Detection)")
+        return True, {'error': 'Access denied (Automated detection).'}
+    
+    # Submit delay check
+    if dto.load_time > 0:
+        if current_time - (dto.load_time / 1000) < ValidationConfig.MIN_SUBMIT_DELAY_SECONDS:
+            add_ip_warning(ip_hash, "Submit too fast (Bot-Detection)")
+            return True, {'error': 'Please take a bit more time to fill it out.'}
+    
+    return False, None
+
+
+def check_content_quality(dto: ApplicationDTO, ip_hash: str) -> Tuple[bool, Optional[Dict]]:
+    """
+    Check for content repetition, paste detection, and semantic similarity.
+    
+    Returns:
+        Tuple of (has_issues, error_response or None)
+    """
+    about_me = dto.about_me.strip()
+    
+    # Content repetition check
+    if about_me:
+        repetition, auto_blocked = check_content_repetition(ip_hash, about_me)
+        if repetition or auto_blocked:
+            return True, {'error': 'Application rejected: Duplicate content detected.'}
+    
+    # Paste detection warning
+    if 'about_me' in dto.pasted_fields:
+        if len(about_me) > ValidationConfig.PASTE_WARNING_THRESHOLD:
+            add_ip_warning(ip_hash, "Extreme Paste detected in About-Me")
+    
+    # Semantic similarity check
+    is_similar, field_name = check_semantic_similarity(about_me)
+    if is_similar:
+        return True, {'error': f'Your answer in "{field_name}" is too similar to an existing application. Please write your own text.'}
+    
+    # Duplicate fields check
+    has_duplicates, duplicate_fields = check_duplicate_fields(dto.to_sanitized_dict())
+    if has_duplicates:
+        return True, {'error': 'Please write different texts in the various fields.'}
+    
+    return False, None
+
+
+def save_application(dto: ApplicationDTO, ip_hash: str) -> Tuple[bool, Dict]:
+    """
+    Save application to database and send notification.
+    
+    Returns:
+        Tuple of (success, response_dict)
+    """
+    try:
+        # Generate UUID (guaranteed unique, no race conditions)
+        app_id = str(uuid4())
+        
+        # Create and save application
+        application = dto.to_db_model(app_id, ip_hash)
+        db.session.add(application)
+        db.session.commit()
+        
+        # Rate limit update only after successful commit
+        RATE_LIMITS[request.remote_addr] = time.time()
+        
+        # Send notification (non-blocking)
+        send_discord_notification(application.to_dict())
+        
+        return True, {'success': True}
+        
+    except Exception as e:
+        db.session.rollback()
+        raise
+
+
+# =============================================================================
+# PUBLIC APPLICATION ENDPOINT
+# =============================================================================
+
+@applications_bp.route('/api/applications', methods=['POST'])
+def add_application():
+    """
+    Submit a new application.
+    
+    Performs in order:
+    1. Security checks (IP blacklist, CSRF)
+    2. Rate limiting
+    3. Bot detection (honeypot, timing)
+    4. Data validation
+    5. Content quality checks
+    6. Database persistence
+    """
+    try:
+        ip_hash = get_client_ip_hash()
+        
+        # 1. Security checks
+        is_blocked, error_response = perform_security_checks(ip_hash)
+        if is_blocked:
+            status = 403
+            return jsonify(error_response), status
+        
+        # 2. Rate limiting
+        is_limited, error_response = check_rate_limit(request.remote_addr)
+        if is_limited:
+            return jsonify(error_response), 429
+        
+        # 3. Create DTO and perform bot detection
+        dto = ApplicationDTO(request.json)
+        
+        is_bot, error_response = perform_bot_detection(dto, ip_hash)
+        if is_bot:
+            status = 403 if 'Automated' in error_response.get('error', '') else 400
+            return jsonify(error_response), status
+        
+        # 4. Validate application data
+        validation_error = dto.validate()
+        if validation_error:
+            return jsonify({'error': f'Validation error: {validation_error}'}), 400
+        
+        # 5. Content quality checks
+        has_issues, error_response = check_content_quality(dto, ip_hash)
+        if has_issues:
+            return jsonify(error_response), 400
+        
+        # 6. Save to database
+        success, response = save_application(dto, ip_hash)
+        return jsonify(response)
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': 'An internal error occurred.'}), 500
+
+
+# =============================================================================
+# ADMIN ENDPOINTS (Protected with @require_admin decorator)
+# =============================================================================
 
 @applications_bp.route('/api/applications', methods=['GET'])
+@require_admin
 def get_applications():
+    """Get paginated list of applications with optional filtering."""
     try:
-        session_token = request.cookies.get('admin_session_token')
-        if not validate_admin_session(session_token):
-             return jsonify({'error': 'Unauthorized'}), 401
-
         # Query parameters
         page = request.args.get('page', 1, type=int)
         limit = request.args.get('limit', 20, type=int)
         status = request.args.get('status', '', type=str)
-        search = request.args.get('q', '', type=str) # Search query
+        search = request.args.get('q', '', type=str)
         
         # Base query
         query = Application.query
@@ -77,16 +361,16 @@ def get_applications():
         if status and status != 'all':
             query = query.filter_by(status=status)
         
-        # Search (Case-insensitive search in roblox_user or discord_name)
+        # Search (case-insensitive)
         if search:
             search_term = f"%{search}%"
             query = query.filter(
-                (Application.roblox_user.ilike(search_term)) | 
+                (Application.roblox_user.ilike(search_term)) |
                 (Application.discord_name.ilike(search_term)) |
                 (Application.id.like(search_term))
             )
 
-        # Sorting: Newest first (uses index)
+        # Sorting: Newest first (uses timestamp index)
         query = query.order_by(Application.timestamp.desc())
 
         # Pagination
@@ -105,20 +389,19 @@ def get_applications():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@applications_bp.route('/api/applications/<id>', methods=['GET'])
-def get_application(id):
-    try:
-        session_token = request.cookies.get('admin_session_token')
-        if not validate_admin_session(session_token):
-             return jsonify({'error': 'Unauthorized'}), 401
 
+@applications_bp.route('/api/applications/<id>', methods=['GET'])
+@require_admin
+def get_application(id):
+    """Get a single application with moderation info."""
+    try:
         application = Application.query.get(id)
         if not application:
             return jsonify({'error': 'Not found'}), 404
             
         app_dict = application.to_dict()
         
-        # Moderation info
+        # Add moderation info
         is_banned, ban_info = is_ip_blacklisted(application.ip_hash)
         app_dict['is_banned'] = is_banned
         app_dict['ban_info'] = ban_info if is_banned else None
@@ -131,169 +414,12 @@ def get_application(id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@applications_bp.route('/api/applications', methods=['POST'])
-def add_application():
-    try:
-        ip_hash = get_client_ip_hash()
-        is_blocked, block_info = is_ip_blacklisted(ip_hash)
-        
-        if is_blocked:
-            if block_info.get('expires_at'):
-                hours_left = max(1, int((block_info['expires_at'] - time.time()) / 3600))
-                return jsonify({
-                    'error': f'Your IP is temporarily blocked. Reason: {block_info.get("reason", "Rule violation")}. Block expires in approx. {hours_left} hours.'
-                }), 403
-            else:
-                return jsonify({
-                    'error': f'Your IP is permanently blocked. Reason: {block_info.get("reason", "Serious violation")}'
-                }), 403
-
-        csrf_token = request.headers.get('X-CSRF-Token')
-        if not validate_csrf_token(csrf_token):
-            return jsonify({'error': 'Access denied (Invalid or expired CSRF token).'}), 403
-        
-        if request.headers.get('X-Requested-With') != 'DRP-Client':
-            return jsonify({'error': 'Access denied (Invalid Header).'}), 403
-
-        client_ip = request.remote_addr
-        current_time = time.time()
-        
-        if client_ip in RATE_LIMITS:
-            last_request_time = RATE_LIMITS[client_ip]
-            if current_time - last_request_time < 60:
-                warning_count, auto_blocked = add_ip_warning(ip_hash, "Rate-Limit Abuse (Spamming Applications)")
-                if auto_blocked:
-                    return jsonify({'error': 'Too many requests. Your IP has been blocked.'}), 403
-                return jsonify({'error': 'Please wait a minute.'}), 429
-        
-
-        limit_dict_size(RATE_LIMITS, 10000)
-        # Rate limit update moved to end of function
-
-
-        new_app = request.json
-        
-        # 1. Honeypot check
-        if new_app.get('website_url'):
-            add_ip_warning(ip_hash, "Honeypot filled (Bot-Detection)")
-            return jsonify({'error': 'Access denied (Automated detection).'}), 403
-            
-        # 2. Submit delay check (Min. 5 seconds)
-        load_time = new_app.get('load_time', 0)
-        if load_time > 0:
-            if current_time - (load_time / 1000) < 5:
-                add_ip_warning(ip_hash, "Submit too fast (Bot-Detection)")
-                return jsonify({'error': 'Please take a bit more time to fill it out.'}), 400
-        
-        sanitized_data = {
-            'application_type': new_app.get('applicationType'),
-            'roblox_user': sanitize_input(new_app.get('roblox_user', '')),
-            'discord_name': sanitize_input(new_app.get('discord_name', '')),
-            'age': new_app.get('age'),
-            'about_me': sanitize_input(new_app.get('about_me', '')),
-            'daily_time': sanitize_input(new_app.get('daily_time', '')),
-            'motivation': sanitize_input(new_app.get('motivation', '')) if 'motivation' in new_app else None,
-            'ip_hash': ip_hash,
-            'timestamp': new_app.get('timestamp', time.time())
-        }
-        
-        # Hard length limits (DoS protection)
-        if len(sanitized_data['about_me']) > 5000:
-             return jsonify({'error': 'About me is too long (Max 5000 characters).'}), 400
-        
-        if sanitized_data.get('motivation') and len(sanitized_data['motivation']) > 5000:
-             return jsonify({'error': 'Motivation is too long (Max 5000 characters).'}), 400
-
-        about_me = sanitized_data.get('about_me', '').strip()
-        if about_me:
-            repetition, auto_blocked = check_content_repetition(ip_hash, about_me)
-            if auto_blocked:
-                return jsonify({'error': 'Application rejected: Automatic block due to repetitive spam.'}), 403
-
-        if len(about_me) < 15:
-            add_ip_warning(ip_hash, "Very short application")
-            auto_blocked = False
-        elif looks_like_spam(about_me):
-            warning_count, auto_blocked = add_ip_warning(ip_hash, "Spam in 'About me'")
-        elif looks_like_spam(sanitized_data.get('motivation', '')):
-            warning_count, auto_blocked = add_ip_warning(ip_hash, "Spam in 'Motivation'")
-        else:
-            auto_blocked = False
-
-        if auto_blocked:
-            return jsonify({'error': 'Application rejected: Automatic block.'}), 403
-
-        # For validation, we need the format with roblox_user etc.
-        validation_data = {
-            'roblox_user': sanitized_data['roblox_user'],
-            'discord_name': sanitized_data['discord_name'],
-            'age': sanitized_data['age'],
-            'about_me': sanitized_data['about_me'],
-            'motivation': sanitized_data.get('motivation'),
-            'pasted_fields': new_app.get('pasted_fields', [])
-        }
-        
-        # 3. Paste detection warning
-        if 'about_me' in validation_data.get('pasted_fields', []):
-            # We don't block immediately, but give a warning in the log / note
-            # Or we could be stricter if the text is very long
-            if len(validation_data['about_me']) > 500:
-                add_ip_warning(ip_hash, "Extreme Paste detected in About-Me")
-        
-        # 4. Semantic similarity check (Copy-Paste from others)
-        is_similar, field_name = check_semantic_similarity(validation_data['about_me'])
-        if is_similar:
-             return jsonify({'error': f'Your answer in "{field_name}" is too similar to an existing application. Please write your own text.'}), 400
-
-        error_msg = validate_application_data(validation_data)
-        if error_msg:
-            if "Spam" in error_msg:
-                add_ip_warning(ip_hash, f"Spam validation error: {error_msg}")
-            return jsonify({'error': f'Validation error: {error_msg}'}), 400
-        
-        # Server-side duplicate field check
-        has_duplicates, duplicate_fields = check_duplicate_fields(sanitized_data)
-        if has_duplicates:
-            add_ip_warning(ip_hash, f"Duplicate Fields: {duplicate_fields}")
-            return jsonify({'error': 'Please write different texts in the various fields.'}), 400
-        
-        # Generate ID
-        app_id = str(int(time.time() * 1000))
-        
-        # Save new application in DB
-        application = Application(
-            id=app_id,
-            application_type=sanitized_data['application_type'],
-            roblox_user=sanitized_data['roblox_user'],
-            discord_name=sanitized_data['discord_name'],
-            age=sanitized_data['age'],
-            about_me=sanitized_data['about_me'],
-            daily_time=sanitized_data.get('daily_time'),
-            motivation=sanitized_data.get('motivation'),
-            ip_hash=ip_hash,
-            timestamp=sanitized_data['timestamp'],
-            status='pending'
-        )
-        db.session.add(application)
-        db.session.commit()
-            
-        
-        # Rate limit update only on success
-        RATE_LIMITS[client_ip] = time.time()
-        
-        send_discord_notification(application.to_dict())
-        return jsonify({'success': True})
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': 'An internal error occurred.'}), 500
 
 @applications_bp.route('/api/applications/<id>', methods=['PUT'])
+@require_admin
 def update_application(id):
+    """Update application status."""
     try:
-        session_token = request.cookies.get('admin_session_token')
-        if not validate_admin_session(session_token):
-            return jsonify({'error': 'Unauthorized'}), 401
-        
         update_data = request.json
         allowed_fields = {'status'}
         filtered_data = {k: v for k, v in update_data.items() if k in allowed_fields}
@@ -310,37 +436,38 @@ def update_application(id):
         
         db.session.commit()
         return jsonify({'success': True})
+        
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': 'An internal error occurred.'}), 500
 
+
 @applications_bp.route('/api/applications/<id>', methods=['DELETE'])
+@require_admin
 def delete_application(id):
+    """Delete a single application."""
     try:
-        session_token = request.cookies.get('admin_session_token')
-        if not validate_admin_session(session_token):
-            return jsonify({'error': 'Unauthorized'}), 401
-        
         application = Application.query.get(id)
         if application:
             db.session.delete(application)
             db.session.commit()
         
         return jsonify({'success': True})
+        
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': 'An internal error occurred.'}), 500
 
+
 @applications_bp.route('/api/applications', methods=['DELETE'])
+@require_admin
 def clear_applications():
+    """Delete all applications."""
     try:
-        session_token = request.cookies.get('admin_session_token')
-        if not validate_admin_session(session_token):
-            return jsonify({'error': 'Unauthorized'}), 401
-        
         Application.query.delete()
         db.session.commit()
         return jsonify({'success': True})
+        
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': 'An internal error occurred.'}), 500

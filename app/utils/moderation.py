@@ -184,7 +184,7 @@ def add_ip_warning(ip_hash, reason, moderator="auto_mod"):
         warn_count = IPWarning.query.filter_by(ip_hash=ip_hash).count()
         
         auto_blocked = False
-        if warn_count >= 5:
+        if warn_count >= 3:
             auto_blocked = True
             reason_bl = f"Auto-Mod: Too many warnings ({warn_count})" if warn_count < 10 else "Auto-Mod: Extreme spamming behavior"
             duration = 24 if warn_count < 10 else None
@@ -281,7 +281,7 @@ def check_content_repetition(ip_hash, content):
     
     content_hash = hashlib.md5(content.encode()).hexdigest()
     if content_hash in RECENT_CONTENT_HASHES[ip_hash]:
-        return add_ip_warning(ip_hash, "Slow-Spam: Repeated content")
+        return True, False # Repetition detected, but don't auto-warn
     
     RECENT_CONTENT_HASHES[ip_hash].append(content_hash)
     if len(RECENT_CONTENT_HASHES[ip_hash]) > MAX_CONTENT_HISTORY:

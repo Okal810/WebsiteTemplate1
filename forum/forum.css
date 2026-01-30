@@ -121,3 +121,72 @@ body {
         transform: translateX(0);
     }
 }
+
+/* ===== MOBILE RESPONSIVE STYLES ===== */
+@media (max-width: 768px) {
+    /* Navigation Container - Enable Wrapping */
+    nav > div {
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    /* Header Actions Container */
+    nav > div > div:last-child {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    /* Navigation Buttons */
+    nav > div > div:last-child a,
+    nav > div > div:last-child button {
+        font-size: 0.75rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    /* MOD Button */
+    #mod-toggle-btn {
+        order: 2;
+    }
+
+    /* Frage Stellen Button */
+    nav > div > div:last-child button:last-child {
+        order: 1;
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Logo - Center on Mobile */
+    nav > div > a:first-child {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Warning Box - Mobile Position */
+    #warning-box {
+        left: 0.5rem;
+        right: 0.5rem;
+        max-width: none;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Extra Small Screens */
+    nav > div > div:last-child {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    nav > div > div:last-child a,
+    nav > div > div:last-child button {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+
+    /* Hide link text on very small screens */
+    nav > div > div:last-child a {
+        padding: 0.5rem 1rem;
+    }
+}
