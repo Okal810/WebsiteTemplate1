@@ -1,4 +1,13 @@
-# Server Systems v2.8.0 - Server Management Platform
+# Server Systems v2.8.0 - AI Test Project
+
+##  Project Context & Disclaimer
+**This is just an AI test. Free to use. The project is not my creativity.**
+
+Many of the critical issues encountered in this project exist because AI will not be able to replace real human developers for a long time. Since AI lacks the imagination and creativity of a regular human, it does not have the same holistic overview that a human developer does. 
+
+In fact, human developers are faster than AI-driven development. This is because AI tends to give advice that seems useful initially but ultimately causes time-consuming corrections. Another issue with AI is that its code tends to be more repetitive, and problems can occur in long-term projects.
+
+---
 
 ## Project Overview
 Server Systems is a secure, Flask-based administrative and moderation platform designed for server management. The system provides tools for application tracking, forum moderation, and real-time server status monitoring through a centralized dashboard. Version 2.8.0 introduces code quality improvements including the ApplicationDTO pattern, centralized validation configuration, and transaction-safe rate limiting.
@@ -56,40 +65,24 @@ The platform adheres to a structured 9-layer security model to ensure maximum pr
 
 1. **Repository Initialization**
    ```bash
-   git clone https://github.com/yourusername/Server-systems.git
+   git clone [https://github.com/yourusername/Server-systems.git](https://github.com/yourusername/Server-systems.git)
    cd Server-systems
    ```
-
-2. **Environment Configuration**
-   It is recommended to use a virtual environment:
+2. Enviroment Configuration
    ```bash
    python -m venv venv
-   # Windows
-   .\venv\Scripts\activate
-   # Linux/macOS
-   source venv/bin/activate
-   ```
+# Windows
+.\venv\Scripts\activate
+# Linux/macOS
+source venv/bin/activate
 
-3. **Dependency Installation**
-   ```bash
-   pip install -r requirements.txt
-   ```
+# Dependency Installation
+``` Bash
 
-4. **Credential Management**
-   - The application manages administrative credentials via `admin_credentials.txt`.
-   - Initial credentials are automatically generated upon first execution.
-
-## Execution and Deployment
-
-### Development Server
-To initiate the application in a development environment:
-```bash
-python run.py
+pip install -r requirements.txt
 ```
-The interface is accessible via `http://localhost:5000`.
+Credential Management
 
-### Production Deployment
-For production environments, the use of a robust WSGI server (e.g., Gunicorn or Waitress) is mandatory. Ensure that `SECRET_KEY` and other sensitive configurations are managed via environment variables.
+The application manages administrative credentials via admin_credentials.txt.
 
-## License
-Private Project - All Rights Reserved.
+Initial credentials are automatically generated upon first execution.
