@@ -43,11 +43,52 @@ function setupEventDelegation() {
         const action = btn.dataset.action;
         const id = btn.dataset.id;
         const ip = btn.dataset.ip;
+        const page = btn.dataset.page;
 
-        if (action === 'ban') banUser(ip);
-        if (action === 'warn') warnUser(ip);
-        if (action === 'delete-post') deletePost(id);
+        // Handle all actions via data-action attribute (CSP-Compliant)
+        switch (action) {
+            case 'ban':
+                banUser(ip);
+                break;
+            case 'warn':
+                warnUser(ip);
+                break;
+            case 'delete-post':
+                deletePost(id);
+                break;
+            case 'page':
+                if (page && !btn.disabled) {
+                    const pageNum = parseInt(page, 10);
+                    if (!isNaN(pageNum)) changePage(pageNum);
+                }
+                break;
+        }
     });
+
+    // CSP-Compliant: Event delegation for comments container
+    const commentsContainer = document.getElementById('comments-container');
+    if (commentsContainer) {
+        commentsContainer.addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-action]');
+            if (!btn) return;
+
+            const action = btn.dataset.action;
+            const ip = btn.dataset.ip;
+            const id = btn.dataset.id;
+
+            switch (action) {
+                case 'warn-comment':
+                    warnUser(ip);
+                    break;
+                case 'ban-comment':
+                    banUser(ip);
+                    break;
+                case 'delete-comment':
+                    deleteComment(id);
+                    break;
+            }
+        });
+    }
 }
 
 function setupSearchDebounce() {
@@ -237,16 +278,16 @@ function renderPosts(posts, meta) {
         </div>
     `).join('');
 
-    // Pagination Controls
+    // Pagination Controls - CSP-Compliant
     if (meta && meta.total_pages > 1) {
         html += `
-            <div class="flex justify-center items-center gap-4 mt-8 pt-4 border-t border-white/10">
-                <button onclick="window.changePage(${meta.page - 1})" ${!meta.has_prev ? 'disabled' : ''} 
+            <div class="flex justify-center items-center gap-4 mt-8 pt-4 border-t border-white/10" id="pagination-controls">
+                <button data-action="page" data-page="${meta.page - 1}" ${!meta.has_prev ? 'disabled' : ''} 
                     class="px-4 py-2 bg-white/5 rounded hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-white text-sm font-tech">
                     <i class="fas fa-chevron-left mr-2"></i>Zurück
                 </button>
                 <span class="text-gray-400 font-tech text-sm">Seite ${meta.page} von ${meta.total_pages}</span>
-                <button onclick="window.changePage(${meta.page + 1})" ${!meta.has_next ? 'disabled' : ''} 
+                <button data-action="page" data-page="${meta.page + 1}" ${!meta.has_next ? 'disabled' : ''} 
                     class="px-4 py-2 bg-white/5 rounded hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-white text-sm font-tech">
                     Weiter<i class="fas fa-chevron-right ml-2"></i>
                 </button>
@@ -380,7 +421,7 @@ function renderComments(comments) {
     }
 
     container.innerHTML = comments.map(comment => `
-        <div class="comment-card py-3 relative group">
+        <div class="comment-card py-3 relative group" data-comment-id="${comment.id}" data-ip-hash="${comment.ip_hash || ''}">
             <div class="flex items-center justify-between mb-2">
                 <div class="flex items-center gap-2">
                     <span class="font-bold text-white text-sm">${escapeHtml(comment.author)}</span>
@@ -389,18 +430,18 @@ function renderComments(comments) {
                 ${isModMode ? `
                     <div class="flex gap-1">
                         ${comment.ip_hash ? `
-                        <button onclick="warnUser('${comment.ip_hash}')" 
+                        <button data-action="warn-comment" data-ip="${comment.ip_hash}" 
                             class="w-6 h-6 bg-gray-800 hover:bg-yellow-600 hover:text-black rounded flex items-center justify-center text-gray-400 text-xs transition-all border border-white/10" title="Benutzer verwarnen">
-                            <i class="fas fa-exclamation-triangle"></i>
+                            <i class="fas fa-exclamation-triangle pointer-events-none"></i>
                         </button>
-                        <button onclick="banUser('${comment.ip_hash}')" 
+                        <button data-action="ban-comment" data-ip="${comment.ip_hash}" 
                             class="w-6 h-6 bg-gray-800 hover:bg-red-900 hover:text-white rounded flex items-center justify-center text-gray-400 text-xs transition-all border border-white/10" title="Benutzer sperren">
-                            <i class="fas fa-ban"></i>
+                            <i class="fas fa-ban pointer-events-none"></i>
                         </button>
                         ` : ''}
-                        <button onclick="deleteComment('${comment.id}')" 
+                        <button data-action="delete-comment" data-id="${comment.id}" 
                             class="w-6 h-6 bg-red-600 hover:bg-red-500 rounded flex items-center justify-center text-white text-xs transition-all" title="Kommentar löschen">
-                            <i class="fas fa-trash"></i>
+                            <i class="fas fa-trash pointer-events-none"></i>
                         </button>
                     </div>
                 ` : ''}

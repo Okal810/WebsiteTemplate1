@@ -13,14 +13,14 @@
     <link rel="preconnect" href="https://cdn.tailwindcss.com">
 
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com" nonce="{{ csp_nonce }}"></script>
 
     <!-- Google Fonts (async) -->
     <link rel="preload" as="style"
         href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;600;700&family=Inter:wght@300;400;600&display=swap">
     <link
         href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;600;700&family=Inter:wght@300;400;600&display=swap"
-        rel="stylesheet" media="print" onload="this.media='all'">
+        rel="stylesheet">
     <noscript>
         <link
             href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;600;700&family=Inter:wght@300;400;600&display=swap"
@@ -29,14 +29,13 @@
 
     <!-- FontAwesome Icons (async) -->
     <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-        media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <noscript>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     </noscript>
 
     <!-- Tailwind Konfiguration -->
-    <script>
+    <script nonce="{{ csp_nonce }}">
         tailwind.config = {
             theme: {
                 extend: {
@@ -89,8 +88,8 @@
         <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
             <!-- Logo (Pfad angepasst) -->
             <a href="../startseite/startseite.html" class="flex items-center gap-3 group">
-                <img src="../startseite/Logo.svg" onerror="this.src='https://via.placeholder.com/150x50?text=Server'"
-                    alt="Server Logo" class="h-10 w-auto group-hover:brightness-125 transition-all">
+                <img src="../startseite/Logo.svg" id="navbar-logo" alt="Server Logo"
+                    class="h-10 w-auto group-hover:brightness-125 transition-all">
                 <div class="hidden sm:block">
                     <span class="font-display font-bold text-2xl tracking-wider text-white">SERVER<span
                             class="text-Server-red">NAME</span></span>
@@ -126,11 +125,13 @@
         <!-- Mobile Dropdown -->
         <div id="mobile-menu"
             class="hidden absolute top-full left-0 w-full bg-Server-black/95 border-b border-Server-red/30 flex-col items-center py-8 gap-6 md:hidden">
-            <a href="../startseite/startseite.html" class="text-xl font-display uppercase">Startseite</a>
-            <a href="#" class="text-xl font-display uppercase text-Server-red font-bold">Karriere</a>
-            <a href="../forum/forum.html" class="text-xl font-display uppercase text-Server-gold">Forum</a>
+            <a href="../startseite/startseite.html"
+                class="text-xl font-display uppercase mobile-nav-link">Startseite</a>
+            <a href="#" class="text-xl font-display uppercase text-Server-red font-bold mobile-nav-link">Karriere</a>
+            <a href="../forum/forum.html"
+                class="text-xl font-display uppercase text-Server-gold mobile-nav-link">Forum</a>
             <a href="../startseite/startseite.html#join"
-                class="text-xl font-display text-Server-red font-bold uppercase">Jetzt Spielen</a>
+                class="text-xl font-display text-Server-red font-bold uppercase mobile-nav-link">Jetzt Spielen</a>
         </div>
     </nav>
 
@@ -177,7 +178,7 @@
                     <div class="flex items-center gap-2"><i class="fas fa-check text-purple-500"></i> Erfahrung im
                         Support</div>
                 </div>
-                <button onclick="openModal('staff')"
+                <button id="open-staff-btn"
                     class="block w-full py-3 bg-purple-700 hover:bg-purple-600 text-white font-bold text-center rounded uppercase tracking-widest transition-colors">
                     Als Staff Bewerben
                 </button>
@@ -206,7 +207,7 @@
                     <div class="flex items-center gap-2"><i class="fas fa-check text-pink-500"></i> Photoshop / Blender
                     </div>
                 </div>
-                <button onclick="openModal('designer')"
+                <button id="open-designer-btn"
                     class="block w-full py-3 bg-pink-700 hover:bg-pink-600 text-white font-bold text-center rounded uppercase tracking-widest transition-colors">
                     Als Designer Bewerben
                 </button>
@@ -237,7 +238,7 @@
                     <div class="flex items-center gap-2"><i class="fas fa-check text-Server-gold"></i> Teamfähigkeit
                     </div>
                 </div>
-                <button onclick="openModal('event')"
+                <button id="open-event-btn"
                     class="block w-full py-3 bg-yellow-700 hover:bg-yellow-600 text-white font-bold text-center rounded uppercase tracking-widest transition-colors">
                     Als Event-Manager Bewerben
                 </button>
@@ -250,8 +251,8 @@
     <div id="modal-staff" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="modal-title"
         role="dialog" aria-modal="true">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 bg-black/80 transition-opacity backdrop-blur-sm" aria-hidden="true"
-                onclick="closeModal('staff')"></div>
+            <div class="fixed inset-0 bg-black/80 transition-opacity backdrop-blur-sm modal-bg-close" data-modal="staff"
+                aria-hidden="true"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
             <div
                 class="inline-block align-bottom bg-Server-card border border-white/10 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
@@ -333,7 +334,7 @@
                         </div>
 
                         <div class="pt-4 flex justify-end gap-3">
-                            <button type="button" onclick="closeModal('staff')"
+                            <button type="button" id="close-staff-btn"
                                 class="px-4 py-2 bg-transparent border border-white/20 hover:bg-white/10 rounded text-white transition-colors">Abbrechen</button>
                             <button type="submit"
                                 class="px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded text-white font-bold transition-colors">Bewerbung
@@ -349,8 +350,8 @@
     <div id="modal-designer" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="modal-title"
         role="dialog" aria-modal="true">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 bg-black/80 transition-opacity backdrop-blur-sm" aria-hidden="true"
-                onclick="closeModal('designer')"></div>
+            <div class="fixed inset-0 bg-black/80 transition-opacity backdrop-blur-sm modal-bg-close"
+                data-modal="designer" aria-hidden="true"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
             <div
                 class="inline-block align-bottom bg-Server-card border border-white/10 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
@@ -416,7 +417,7 @@
                         </div>
 
                         <div class="pt-4 flex justify-end gap-3">
-                            <button type="button" onclick="closeModal('designer')"
+                            <button type="button" id="close-designer-btn"
                                 class="px-4 py-2 bg-transparent border border-white/20 hover:bg-white/10 rounded text-white transition-colors">Abbrechen</button>
                             <button type="submit"
                                 class="px-6 py-2 bg-pink-600 hover:bg-pink-700 rounded text-white font-bold transition-colors">Bewerbung
@@ -432,8 +433,8 @@
     <div id="modal-event" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="modal-title"
         role="dialog" aria-modal="true">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 bg-black/80 transition-opacity backdrop-blur-sm" aria-hidden="true"
-                onclick="closeModal('event')"></div>
+            <div class="fixed inset-0 bg-black/80 transition-opacity backdrop-blur-sm modal-bg-close" data-modal="event"
+                aria-hidden="true"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
             <div
                 class="inline-block align-bottom bg-Server-card border border-white/10 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
@@ -506,7 +507,7 @@
                         </div>
 
                         <div class="pt-4 flex justify-end gap-3">
-                            <button type="button" onclick="closeModal('event')"
+                            <button type="button" id="close-event-btn"
                                 class="px-4 py-2 bg-transparent border border-white/20 hover:bg-white/10 rounded text-white transition-colors">Abbrechen</button>
                             <button type="submit"
                                 class="px-6 py-2 bg-yellow-600 hover:bg-yellow-700 rounded text-white font-bold transition-colors">Bewerbung
@@ -531,7 +532,7 @@
     </footer>
 
     <!-- CSRF Token Initializer -->
-    <script>
+    <script nonce="{{ csp_nonce }}">
             (async function () {
                 try {
                     const response = await fetch('/api/csrf-token');
@@ -544,6 +545,51 @@
                     console.error('Failed to initialize CSRF token:', e);
                 }
             })();
+
+        // CSP Event Handlers (Refactored from inline)
+        document.addEventListener('DOMContentLoaded', () => {
+            const addBtn = (id, fn) => document.getElementById(id)?.addEventListener('click', fn);
+
+            // Modal Controls
+            addBtn('open-staff-btn', () => typeof openModal === 'function' && openModal('staff'));
+            addBtn('open-designer-btn', () => typeof openModal === 'function' && openModal('designer'));
+            addBtn('open-event-btn', () => typeof openModal === 'function' && openModal('event'));
+
+            addBtn('close-staff-btn', () => typeof closeModal === 'function' && closeModal('staff'));
+            addBtn('close-designer-btn', () => typeof closeModal === 'function' && closeModal('designer'));
+            addBtn('close-event-btn', () => typeof closeModal === 'function' && closeModal('event'));
+
+            // Background Closing
+            document.querySelectorAll('.modal-bg-close').forEach(bg => {
+                bg.addEventListener('click', () => {
+                    const modalName = bg.getAttribute('data-modal');
+                    if (typeof closeModal === 'function') closeModal(modalName);
+                });
+            });
+
+            // Mobile Menu
+            addBtn('mobile-menu-btn', () => {
+                const menu = document.getElementById('mobile-menu');
+                menu?.classList.toggle('hidden');
+                menu?.classList.toggle('flex');
+            });
+            document.querySelectorAll('.mobile-nav-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    const menu = document.getElementById('mobile-menu');
+                    menu?.classList.add('hidden');
+                    menu?.classList.remove('flex');
+                });
+            });
+
+            // Logo Error Handling
+            const logo = document.getElementById('navbar-logo');
+            if (logo) {
+                logo.addEventListener('error', () => {
+                    logo.src = 'https://via.placeholder.com/150x50?text=Server';
+                });
+            }
+        });
+
     </script>
 
     <!-- Scripts -->
@@ -564,7 +610,7 @@
     </div>
 
     <!-- Warning Status Checker -->
-    <script>
+    <script nonce="{{ csp_nonce }}">
         (async function checkWarningStatus() {
             try {
                 const response = await fetch('/api/warning-status');
@@ -591,7 +637,7 @@
     </script>
 
     <!-- Scripts -->
-    <script src="karriere.js"></script>
+    <script src="karriere.js" nonce="{{ csp_nonce }}"></script>
 </body>
 
 </html>

@@ -14,14 +14,14 @@
     <link rel="dns-prefetch" href="https://tr.rbxcdn.com">
 
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com" nonce="{{ csp_nonce }}"></script>
 
     <!-- Google Fonts (async für schnelleres Laden) -->
     <link rel="preload" as="style"
         href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;600;700&family=Inter:wght@300;400;600&display=swap">
     <link
         href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;600;700&family=Inter:wght@300;400;600&display=swap"
-        rel="stylesheet" media="print" onload="this.media='all'">
+        rel="stylesheet">
     <noscript>
         <link
             href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;600;700&family=Inter:wght@300;400;600&display=swap"
@@ -30,14 +30,13 @@
 
     <!-- FontAwesome Icons (async) -->
     <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-        media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <noscript>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     </noscript>
 
     <!-- Tailwind Konfiguration (Inline für Stabilität) -->
-    <script>
+    <script nonce="{{ csp_nonce }}">
         tailwind.config = {
             theme: {
                 extend: {
@@ -200,8 +199,8 @@
         <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
             <!-- Logo -->
             <a href="#" class="flex items-center gap-3 group">
-                <img src="Logo.svg" onerror="this.src='https://via.placeholder.com/150x50?text=Server'"
-                    alt="Server Logo" class="h-10 w-auto group-hover:brightness-125 transition-all">
+                <img src="Logo.svg" id="navbar-logo" alt="Server Logo"
+                    class="h-10 w-auto group-hover:brightness-125 transition-all">
                 <div class="hidden sm:block">
                     <span class="font-display font-bold text-2xl tracking-wider text-white">SERVER<span
                             class="text-Server-red">NAME</span></span>
@@ -247,11 +246,10 @@
         <!-- Mobile Dropdown -->
         <div id="mobile-menu"
             class="hidden absolute top-full left-0 w-full bg-Server-black/95 border-b border-Server-red/30 flex-col items-center py-8 gap-6 md:hidden">
-            <a href="#home" class="text-xl font-display uppercase" onclick="toggleMenu()">Startseite</a>
-            <a href="#features" class="text-xl font-display uppercase" onclick="toggleMenu()">Features</a>
-            <a href="../karriere/index.html" class="text-xl font-display uppercase" onclick="toggleMenu()">Karriere</a>
-            <a href="#join" class="text-xl font-display text-Server-red font-bold uppercase"
-                onclick="toggleMenu()">Jetzt
+            <a href="#home" class="text-xl font-display uppercase mobile-nav-link">Startseite</a>
+            <a href="#features" class="text-xl font-display uppercase mobile-nav-link">Features</a>
+            <a href="../karriere/index.html" class="text-xl font-display uppercase mobile-nav-link">Karriere</a>
+            <a href="#join" class="text-xl font-display text-Server-red font-bold uppercase mobile-nav-link">Jetzt
                 Spielen</a>
         </div>
     </nav>
@@ -645,7 +643,7 @@
     </div>
 
     <!-- Warning Status Checker -->
-    <script>
+    <script nonce="{{ csp_nonce }}">
             (async function checkWarningStatus() {
                 try {
                     const response = await fetch('/api/warning-status');
@@ -672,7 +670,7 @@
     </script>
 
     <!-- Scripts -->
-    <script>
+    <script nonce="{{ csp_nonce }}">
         // 1. Loader Logic
         function hideLoader() {
             const loader = document.getElementById('loader');
@@ -749,12 +747,32 @@
         if (statsRow) counterObserver.observe(statsRow);
 
         // 6. Accordion Logic
-        function toggleAccordion(button) {
-            const item = button.parentElement;
-            const isActive = item.classList.contains('active');
-            document.querySelectorAll('.accordion-item').forEach(i => i.classList.remove('active'));
-            if (!isActive) item.classList.add('active');
+        document.querySelectorAll('.accordion-item button').forEach(button => {
+            button.addEventListener('click', () => {
+                const item = button.parentElement;
+                const isActive = item.classList.contains('active');
+                document.querySelectorAll('.accordion-item').forEach(i => i.classList.remove('active'));
+                if (!isActive) item.classList.add('active');
+            });
+        });
+
+        // Logo Error Handling
+        const logo = document.getElementById('navbar-logo');
+        if (logo) {
+            logo.addEventListener('error', () => {
+                logo.src = 'https://via.placeholder.com/150x50?text=Server';
+            });
         }
+
+        // Mobile Nav Link Auto-Close
+        document.querySelectorAll('.mobile-nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                const menu = document.getElementById('mobile-menu');
+                menu?.classList.add('hidden');
+                menu?.classList.remove('flex');
+            });
+        });
+
     </script>
 </body>
 

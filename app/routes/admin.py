@@ -79,7 +79,9 @@ def create_admin_session():
     response = jsonify({'success': True})
     response.set_cookie(
         'admin_session_token', token,
-        path='/', httponly=True, samesite='Lax', secure=False, max_age=1800
+        path='/', httponly=True, samesite='Lax', 
+        secure=current_app.config.get('SECURE_COOKIES', False),
+        max_age=1800
     )
     return response
 
@@ -114,7 +116,7 @@ def require_admin(f):
 @admin_bp.route('/api/admin/blacklist', methods=['GET'])
 @admin_bp.route('/api/moderation/blacklist', methods=['GET'])
 @require_admin
-@rate_limit(max_requests=60, window_seconds=60)
+@rate_limit(max_requests=60, window_seconds=60, scope='session')
 def get_blacklist():
     # OPTIMIZATION: Load directly from DB
     entries = Blacklist.query.order_by(Blacklist.timestamp.desc()).all()

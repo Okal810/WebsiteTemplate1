@@ -377,56 +377,69 @@ def check_rate_limit_memory(
 
 
 def rate_limit(
-    max_requests: int = 10,
+    max_requests: int = 60,
     window_seconds: int = 60,
-    authenticated_multiplier: int = 5
+    scope: str = 'ip'  # Options: 'ip', 'session', 'global'
 ) -> Callable:
     """
-    Adaptive rate limiting decorator with higher limits for authenticated users.
+    Adaptive rate limiting decorator with scope support.
     
     Args:
-        max_requests: Base maximum requests for unauthenticated users
+        max_requests: Maximum requests allowed in window
         window_seconds: Time window in seconds
-        authenticated_multiplier: Limit multiplier for authenticated admins
+        scope: 'ip' (per IP address), 'session' (per admin session), or 'global' (all requests)
         
     Returns:
         Decorator function
-        
-    Example:
-        @rate_limit(max_requests=10, window_seconds=60)
-        def my_endpoint():
-            ...
-        # Unauthenticated: 10 req/min
-        # Authenticated: 50 req/min
     """
     def decorator(f: Callable) -> Callable:
         @wraps(f)
         def wrapped(*args, **kwargs):
-            client_ip = get_client_ip()
+            # Determine Identifier based on scope
+            identifier = None
             
-            # Check authentication (uses cache, very fast)
-            session_token = request.cookies.get('admin_session_token')
-            is_authenticated = validate_admin_session(session_token)
+            if scope == 'session':
+                # Try cookie first, then header
+                identifier = request.cookies.get('admin_session_token') or request.headers.get('X-Session-Token')
+                if not identifier:
+                    # Fallback to IP if no session (e.g. before login or invalid)
+                    # OR return 401? For rate limiting, if they rely on session scope but have none, 
+                    # we treat it as IP based or allow? 
+                    # Let's fallback to IP to prevent abuse effectively.
+                    identifier = "session_fallback_" + get_client_ip()
+            elif scope == 'global':
+                identifier = 'global'
+            else: # scope == 'ip'
+                identifier = get_client_ip()
             
-            # Adaptive limit
-            effective_limit = max_requests * authenticated_multiplier if is_authenticated else max_requests
-            
-            # Check rate limit
             # Use Redis if available (uncomment when enabled):
             # if redis_client:
-            #     is_allowed, count = check_rate_limit_redis(client_ip, effective_limit, window_seconds)
+            #     is_allowed, count = check_rate_limit_redis(identifier, max_requests, window_seconds)
             # else:
-            is_allowed, count = check_rate_limit_memory(client_ip, effective_limit, window_seconds)
+            is_allowed, count = check_rate_limit_memory(identifier, max_requests, window_seconds)
             
             if not is_allowed:
                 return jsonify({
                     'error': 'Rate limit exceeded. Try again later.',
-                    'limit': effective_limit,
+                    'limit': max_requests,
                     'window_seconds': window_seconds,
                     'current_count': count
                 }), 429
             
-            return f(*args, **kwargs)
+            # Add Rate Limit Headers
+            response = None
+            try:
+                response = f(*args, **kwargs)
+            except Exception as e:
+                raise e
+
+            # If response is a Flask Response object (not tuple/dict), add headers
+            # (Handling tuples is complex in decorators without make_response)
+            # For now, we skip headers on simple return types to avoid breaking changes, 
+            # or we could use after_request logic but that is global.
+            # Ideally, use make_response(response) but that might change behavior.
+            
+            return response
         return wrapped
     return decorator
 

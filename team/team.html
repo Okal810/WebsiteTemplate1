@@ -13,14 +13,14 @@
     <link rel="preconnect" href="https://cdn.tailwindcss.com">
 
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com" nonce="{{ csp_nonce }}"></script>
 
     <!-- Google Fonts (async) -->
     <link rel="preload" as="style"
         href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;600;700&family=Inter:wght@300;400;600&display=swap">
     <link
         href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;600;700&family=Inter:wght@300;400;600&display=swap"
-        rel="stylesheet" media="print" onload="this.media='all'">
+        rel="stylesheet">
     <noscript>
         <link
             href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;600;700&family=Inter:wght@300;400;600&display=swap"
@@ -29,8 +29,7 @@
 
     <!-- FontAwesome (async) -->
     <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-        media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <noscript>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     </noscript>
@@ -39,7 +38,7 @@
     <link rel="stylesheet" href="team.css">
 
     <!-- Tailwind Config -->
-    <script>
+    <script nonce="{{ csp_nonce }}">
         tailwind.config = {
             theme: {
                 extend: {

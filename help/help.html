@@ -19,7 +19,7 @@
         href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;600;700&family=Inter:wght@300;400;600&display=swap">
     <link
         href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;600;700&family=Inter:wght@300;400;600&display=swap"
-        rel="stylesheet" media="print" onload="this.media='all'">
+        rel="stylesheet">
     <noscript>
         <link
             href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;600;700&family=Inter:wght@300;400;600&display=swap"
@@ -28,8 +28,7 @@
 
     <!-- FontAwesome (async) -->
     <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-        media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <noscript>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     </noscript>
@@ -63,31 +62,32 @@
         </div>
 
         <nav class="flex-1 overflow-y-auto py-6 space-y-1 px-4">
-            <button onclick="switchCategory('general')"
+            <button data-category="general"
                 class="nav-item w-full flex items-center gap-4 px-4 py-3 rounded-lg text-left text-sm font-medium text-gray-400 active"
                 id="btn-general">
                 <i class="fas fa-compass w-5 text-center"></i> Allgemein
             </button>
-            <button onclick="switchCategory('application')"
+            <button data-category="application"
                 class="nav-item w-full flex items-center gap-4 px-4 py-3 rounded-lg text-left text-sm font-medium text-gray-400"
                 id="btn-application">
                 <i class="fas fa-file-signature w-5 text-center"></i> Bewerbungen
             </button>
-            <button onclick="switchCategory('account')"
+            <button data-category="account"
                 class="nav-item w-full flex items-center gap-4 px-4 py-3 rounded-lg text-left text-sm font-medium text-gray-400"
                 id="btn-account">
                 <i class="fas fa-user-shield w-5 text-center"></i> Account & Daten
             </button>
-            <button onclick="switchCategory('technical')"
+            <button data-category="technical"
                 class="nav-item w-full flex items-center gap-4 px-4 py-3 rounded-lg text-left text-sm font-medium text-gray-400"
                 id="btn-technical">
                 <i class="fas fa-microchip w-5 text-center"></i> Technik
             </button>
-            <button onclick="switchCategory('gameplay')"
+            <button data-category="gameplay"
                 class="nav-item w-full flex items-center gap-4 px-4 py-3 rounded-lg text-left text-sm font-medium text-gray-400"
                 id="btn-gameplay">
                 <i class="fas fa-gamepad w-5 text-center"></i> Gameplay & Steuerung
             </button>
+
 
         </nav>
 
@@ -108,8 +108,7 @@
             <div
                 class="search-container relative max-w-2xl transition-all duration-300 rounded-xl border border-white/10 bg-black/20">
                 <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-gray-500 text-lg"></i>
-                <input type="text" id="help-search" onkeyup="filterFAQ()"
-                    placeholder="Suche nach Themen, Fragen oder Stichworten..."
+                <input type="text" id="help-search" placeholder="Suche nach Themen, Fragen oder Stichworten..."
                     class="w-full bg-transparent border-none text-white placeholder-gray-500 py-4 pl-14 pr-4 focus:ring-0 text-lg font-sans">
             </div>
         </header>

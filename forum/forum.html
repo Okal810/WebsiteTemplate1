@@ -13,21 +13,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com" nonce="{{ csp_nonce }}"></script>
 
     <!-- Google Fonts -->
     <link rel="preload" as="style"
         href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;600;700&family=Inter:wght@300;400;600&display=swap">
     <link
         href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;600;700&family=Inter:wght@300;400;600&display=swap"
-        rel="stylesheet" media="print" onload="this.media='all'">
+        rel="stylesheet">
 
     <!-- FontAwesome -->
     <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-        media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <script>
+    <script nonce="{{ csp_nonce }}">
         tailwind.config = {
             theme: {
                 extend: {
@@ -61,12 +60,12 @@
                     class="font-tech text-gray-400 hover:text-white transition-colors uppercase">Startseite</a>
                 <a href="../help/help.html"
                     class="font-tech text-gray-400 hover:text-white transition-colors uppercase">Hilfe</a>
-                <button id="mod-toggle-btn" onclick="toggleModMode()" style="display: none;"
+                <button id="mod-toggle-btn" style="display: none;"
                     class="bg-white/5 text-gray-400 hover:bg-red-600 hover:text-white px-4 py-2 rounded font-tech font-bold text-sm tracking-wider transition-all border border-white/10"
                     title="Moderationsmodus">
                     <i class="fas fa-shield-alt mr-2"></i>MOD
                 </button>
-                <button onclick="openNewPostModal()"
+                <button id="open-new-post-btn"
                     class="bg-Server-red hover:bg-red-700 text-white px-5 py-2 rounded font-display font-bold text-sm tracking-wider transition-all">
                     <i class="fas fa-plus mr-2"></i>FRAGE STELLEN
                 </button>
@@ -96,7 +95,7 @@
                         class="w-full bg-Server-card border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white placeholder-gray-500 focus:border-Server-red focus:outline-none transition-colors">
                 </div>
                 <!-- New Posts Badge -->
-                <div id="new-posts-badge" onclick="mergeNewPosts()"
+                <div id="new-posts-badge"
                     class="hidden max-w-md mx-auto mt-4 bg-Server-red/20 border border-Server-red/50 text-Server-red text-center py-2 rounded-lg cursor-pointer hover:bg-Server-red/30 transition-all font-tech font-bold text-sm">
                     <i class="fas fa-sync-alt mr-2"></i> <span>0 neue Beiträge</span>
                 </div>
@@ -112,7 +111,7 @@
                 <i class="fas fa-comments text-6xl text-gray-700 mb-4"></i>
                 <h3 class="font-display text-xl text-gray-400 mb-2">Noch keine Beiträge</h3>
                 <p class="text-gray-500 mb-6">Sei der Erste, der eine Frage stellt!</p>
-                <button onclick="openNewPostModal()"
+                <button id="empty-state-btn"
                     class="bg-Server-red hover:bg-red-700 text-white px-6 py-3 rounded font-display font-bold transition-all">
                     <i class="fas fa-plus mr-2"></i>Frage stellen
                 </button>
@@ -133,7 +132,7 @@
         <div class="bg-Server-card border border-white/10 rounded-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto">
             <div class="p-6 border-b border-white/10 flex justify-between items-center">
                 <h2 class="font-display text-xl font-bold text-white">Neue Frage stellen</h2>
-                <button onclick="closeNewPostModal()" class="text-gray-400 hover:text-white text-xl">
+                <button id="close-new-post-btn" class="text-gray-400 hover:text-white text-xl">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -157,7 +156,7 @@
                 <div id="post-error"
                     class="hidden bg-red-500/20 border border-red-500/50 rounded-lg p-3 text-red-400 text-sm">
                 </div>
-                <button onclick="submitPost()" id="submit-post-btn"
+                <button id="submit-post-btn"
                     class="w-full bg-Server-red hover:bg-red-700 text-white py-3 rounded-lg font-display font-bold transition-all">
                     <i class="fas fa-paper-plane mr-2"></i>Absenden
                 </button>
@@ -171,7 +170,7 @@
         <div class="bg-Server-card border border-white/10 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div class="p-6 border-b border-white/10 flex justify-between items-center">
                 <h2 id="detail-title" class="font-display text-xl font-bold text-white"></h2>
-                <button onclick="closePostDetailModal()" class="text-gray-400 hover:text-white text-xl">
+                <button id="close-post-detail-btn" class="text-gray-400 hover:text-white text-xl">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -205,7 +204,7 @@
                         <div id="comment-error"
                             class="hidden bg-red-500/20 border border-red-500/50 rounded-lg p-2 text-red-400 text-sm mb-3">
                         </div>
-                        <button onclick="submitComment()" id="submit-comment-btn"
+                        <button id="submit-comment-btn"
                             class="bg-Server-gold hover:bg-yellow-600 text-black py-2 px-4 rounded font-bold text-sm transition-all">
                             <i class="fas fa-reply mr-2"></i>Antworten
                         </button>
@@ -223,7 +222,7 @@
     </footer>
 
     <!-- CSRF Token Initializer -->
-    <script>
+    <script nonce="{{ csp_nonce }}">
             (async function () {
                 try {
                     const response = await fetch('/api/csrf-token');
@@ -236,6 +235,21 @@
                     console.error('Failed to initialize CSRF token:', e);
                 }
             })();
+
+        // CSP Event Handlers (Refactored from inline)
+        document.addEventListener('DOMContentLoaded', () => {
+            const addBtn = (id, fn) => document.getElementById(id)?.addEventListener('click', fn);
+
+            addBtn('mod-toggle-btn', () => typeof toggleModMode === 'function' && toggleModMode());
+            addBtn('open-new-post-btn', () => typeof openNewPostModal === 'function' && openNewPostModal());
+            addBtn('empty-state-btn', () => typeof openNewPostModal === 'function' && openNewPostModal());
+            addBtn('close-new-post-btn', () => typeof closeNewPostModal === 'function' && closeNewPostModal());
+            addBtn('submit-post-btn', (e) => { e.preventDefault(); typeof submitPost === 'function' && submitPost(); });
+            addBtn('close-post-detail-btn', () => typeof closePostDetailModal === 'function' && closePostDetailModal());
+            addBtn('submit-comment-btn', (e) => { e.preventDefault(); typeof submitComment === 'function' && submitComment(); });
+            addBtn('new-posts-badge', () => typeof mergeNewPosts === 'function' && mergeNewPosts());
+        });
+
     </script>
     <!-- Deterrent Warning (Dynamic) -->
     <div id="warning-box"
@@ -253,7 +267,7 @@
     </div>
 
     <!-- Warning Status Checker -->
-    <script>
+    <script nonce="{{ csp_nonce }}">
         (async function checkWarningStatus() {
             try {
                 const response = await fetch('/api/warning-status');

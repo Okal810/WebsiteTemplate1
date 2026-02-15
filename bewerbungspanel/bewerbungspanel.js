@@ -107,6 +107,7 @@ function renderApplications(apps) {
         let statusBadge = getStatusBadge(app.status);
         let typeColor = getTypeColor(app.applicationType);
 
+        // CSP-Compliant: Use data-* attributes instead of inline onclick
         return `
             <div class="app-card bg-Server-card p-4 rounded border-l-4 ${typeColor.border} mb-3 border-white/5 relative group">
                 <div class="flex justify-between items-start">
@@ -122,12 +123,12 @@ function renderApplications(apps) {
                 </div>
                 
                 <div class="mt-4 flex gap-2">
-                    <button onclick="viewApp('${safeId}')" class="flex-1 py-1.5 bg-white/5 hover:bg-white/10 rounded text-xs font-bold uppercase text-gray-300">
+                    <button data-action="view" data-id="${safeId}" class="flex-1 py-1.5 bg-white/5 hover:bg-white/10 rounded text-xs font-bold uppercase text-gray-300">
                         <i class="fas fa-eye"></i> Details
                     </button>
                     ${app.status === 'pending' ? `
-                    <button onclick="quickAction('${safeId}', 'accepted')" class="px-3 bg-green-900/50 text-green-400 rounded hover:bg-green-800/50"><i class="fas fa-check"></i></button>
-                    <button onclick="quickAction('${safeId}', 'rejected')" class="px-3 bg-red-900/50 text-red-400 rounded hover:bg-red-800/50"><i class="fas fa-times"></i></button>
+                    <button data-action="quick" data-id="${safeId}" data-status="accepted" class="px-3 bg-green-900/50 text-green-400 rounded hover:bg-green-800/50"><i class="fas fa-check"></i></button>
+                    <button data-action="quick" data-id="${safeId}" data-status="rejected" class="px-3 bg-red-900/50 text-red-400 rounded hover:bg-red-800/50"><i class="fas fa-times"></i></button>
                     ` : ''}
                 </div>
             </div>
@@ -205,14 +206,10 @@ function updatePagination(meta) {
 
     let html = '';
     if (meta.pages > 1) {
-        // Prev
-        html += `<button onclick="changePage(${STATE.page - 1})" class="px-3 py-1 rounded bg-white/5 hover:bg-white/10 ${STATE.page <= 1 ? 'opacity-50 cursor-not-allowed' : ''}" ${STATE.page <= 1 ? 'disabled' : ''}><i class="fas fa-chevron-left"></i></button>`;
-
-        // Page Info
+        // CSP-Compliant: Use data-action instead of onclick
+        html += `<button data-action="page" data-page="${STATE.page - 1}" class="px-3 py-1 rounded bg-white/5 hover:bg-white/10 ${STATE.page <= 1 ? 'opacity-50 cursor-not-allowed' : ''}" ${STATE.page <= 1 ? 'disabled' : ''}><i class="fas fa-chevron-left"></i></button>`;
         html += `<span class="px-3 text-sm text-gray-400">Seite ${meta.current_page} von ${meta.pages}</span>`;
-
-        // Next
-        html += `<button onclick="changePage(${STATE.page + 1})" class="px-3 py-1 rounded bg-white/5 hover:bg-white/10 ${STATE.page >= meta.pages ? 'opacity-50 cursor-not-allowed' : ''}" ${STATE.page >= meta.pages ? 'disabled' : ''}><i class="fas fa-chevron-right"></i></button>`;
+        html += `<button data-action="page" data-page="${STATE.page + 1}" class="px-3 py-1 rounded bg-white/5 hover:bg-white/10 ${STATE.page >= meta.pages ? 'opacity-50 cursor-not-allowed' : ''}" ${STATE.page >= meta.pages ? 'disabled' : ''}><i class="fas fa-chevron-right"></i></button>`;
     }
     container.innerHTML = html;
 }
@@ -296,22 +293,25 @@ function renderDetailModal(app) {
     `;
 
 
-    // Actions
-    // Ban Button is always available
-    const banBtn = `<button onclick="banUser('${app.id}', '${app.ip_hash}')" class="px-3 py-2 bg-red-950/30 hover:bg-red-900/50 text-red-500 border border-red-500/20 rounded transition-colors" title="IP SPERREN"><i class="fas fa-ban"></i></button>`;
+    // CSP-Compliant: Store app data on modal and use data-action
+    modal.dataset.appId = app.id;
+    modal.dataset.ipHash = app.ip_hash || '';
+
+    // CSP-Compliant Buttons - use data-action instead of onclick
+    const banBtn = `<button data-action="ban" class="px-3 py-2 bg-red-950/30 hover:bg-red-900/50 text-red-500 border border-red-500/20 rounded transition-colors" title="IP SPERREN"><i class="fas fa-ban"></i></button>`;
 
     if (app.status === 'pending') {
         actions.innerHTML = `
             ${banBtn}
             <div class="flex-1"></div>
-            <button onclick="quickAction('${app.id}', 'rejected'); closeViewModal();" class="px-4 py-2 bg-red-900/30 text-red-400 border border-red-500/30 rounded hover:bg-red-900/50 mr-2">Ablehnen</button>
-            <button onclick="quickAction('${app.id}', 'accepted'); closeViewModal();" class="px-4 py-2 bg-green-900/30 text-green-400 border border-green-500/30 rounded hover:bg-green-900/50">Annehmen</button>
+            <button data-action="reject-close" class="px-4 py-2 bg-red-900/30 text-red-400 border border-red-500/30 rounded hover:bg-red-900/50 mr-2">Ablehnen</button>
+            <button data-action="accept-close" class="px-4 py-2 bg-green-900/30 text-green-400 border border-green-500/30 rounded hover:bg-green-900/50">Annehmen</button>
         `;
     } else {
         actions.innerHTML = `
             ${banBtn}
             <div class="flex-1"></div>
-            <button onclick="closeViewModal()" class="px-4 py-2 bg-white/10 text-white rounded hover:bg-white/20">Schließen</button>
+            <button data-action="close-modal" class="px-4 py-2 bg-white/10 text-white rounded hover:bg-white/20">Schließen</button>
         `;
     }
 
@@ -346,6 +346,72 @@ window.banUser = async function (id, ipHash) {
         console.error(e);
     }
 };
+
+// ==================== EVENT DELEGATION (CSP-Compliant) ====================
+// Single event listeners handle all dynamically created buttons
+document.addEventListener('DOMContentLoaded', () => {
+    // Delegate clicks for app-list buttons
+    document.getElementById('app-list')?.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-action]');
+        if (!btn) return;
+
+        const action = btn.dataset.action;
+        const id = btn.dataset.id;
+        const status = btn.dataset.status;
+
+        switch (action) {
+            case 'view':
+                if (typeof viewApp === 'function') viewApp(id);
+                break;
+            case 'quick':
+                if (typeof quickAction === 'function') quickAction(id, status);
+                break;
+        }
+    });
+
+    // Delegate clicks for modal buttons
+    document.getElementById('modal-detail')?.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-action]');
+        if (!btn) return;
+
+        const modal = document.getElementById('modal-detail');
+        const appId = modal?.dataset.appId;
+        const ipHash = modal?.dataset.ipHash;
+        const action = btn.dataset.action;
+
+        switch (action) {
+            case 'warn':
+                if (typeof warnUser === 'function') warnUser(appId, ipHash);
+                break;
+            case 'ban':
+                if (typeof banUser === 'function') banUser(appId, ipHash);
+                break;
+            case 'unban':
+                if (typeof unbanUser === 'function') unbanUser(appId, ipHash);
+                break;
+            case 'reject-close':
+                if (typeof quickAction === 'function') quickAction(appId, 'rejected');
+                closeViewModal();
+                break;
+            case 'accept-close':
+                if (typeof quickAction === 'function') quickAction(appId, 'accepted');
+                closeViewModal();
+                break;
+            case 'close-modal':
+                closeViewModal();
+                break;
+        }
+    });
+
+    // Delegate clicks for pagination
+    document.getElementById('pagination')?.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-action="page"]');
+        if (!btn || btn.disabled) return;
+
+        const page = parseInt(btn.dataset.page, 10);
+        if (!isNaN(page)) changePage(page);
+    });
+});
 
 // ==================== INIT ====================
 (async () => {

@@ -20,7 +20,7 @@ const faqData = [
         question: 'Wann finden Server Restarts statt?',
         answer: 'Der Server startet automatisch alle 6 Stunden neu (00:00, 06:00, 12:00, 18:00 Uhr), um die Performance zu gewährleisten.'
     },
-    
+
     // --- BEWERBUNGEN ---
     {
         category: 'application',
@@ -94,6 +94,21 @@ let currentCategory = 'general';
 
 document.addEventListener('DOMContentLoaded', () => {
     renderFAQs();
+
+    // Bind category buttons (CSP-compliant - no inline onclick)
+    document.querySelectorAll('[data-category]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const category = btn.getAttribute('data-category');
+            switchCategory(category);
+        });
+    });
+
+    // Bind search input (CSP-compliant - no inline onkeyup)
+    const searchInput = document.getElementById('help-search');
+    if (searchInput) {
+        searchInput.addEventListener('keyup', filterFAQ);
+        searchInput.addEventListener('input', filterFAQ);
+    }
 });
 
 function switchCategory(category) {
@@ -102,9 +117,9 @@ function switchCategory(category) {
         btn.classList.remove('active', 'text-white', 'border-Server-red');
         btn.classList.add('text-gray-400');
     });
-    
+
     const activeBtn = document.getElementById(`btn-${category}`);
-    if(activeBtn) {
+    if (activeBtn) {
         activeBtn.classList.add('active', 'text-white');
         activeBtn.classList.remove('text-gray-400');
     }
@@ -121,9 +136,9 @@ function renderFAQs(filterText = '') {
 
     const filtered = faqData.filter(item => {
         const matchesCategory = item.category === currentCategory;
-        const matchesSearch = item.question.toLowerCase().includes(filterText.toLowerCase()) || 
-                              item.answer.toLowerCase().includes(filterText.toLowerCase());
-        
+        const matchesSearch = item.question.toLowerCase().includes(filterText.toLowerCase()) ||
+            item.answer.toLowerCase().includes(filterText.toLowerCase());
+
         // If searching, ignore category, otherwise respect category
         return filterText ? matchesSearch : matchesCategory;
     });

@@ -35,7 +35,7 @@ def server_status():
     # current_app.logger.debug(f"Status check from {request.remote_addr}")
     uptime = time.time() - START_TIME
     app_count = Application.query.count()
-    return jsonify({'status': 'online', 'uptime': uptime, 'applications': app_count, 'version': '2.7.0'})
+    return jsonify({'status': 'online', 'uptime': uptime, 'applications': app_count, 'version': '2.8.0'})
 
 @main_bp.route('/api/updates', methods=['GET'])
 def get_updates():
@@ -153,32 +153,36 @@ def end_shift():
         db.session.rollback()
         return jsonify({'error': 'Interner Fehler.'}), 500
 
+@main_bp.route('/favicon.ico')
+def favicon():
+    """Serve favicon or return empty response to prevent 404 spam."""
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    favicon_path = os.path.join(base_dir, 'favicon.ico')
+    if os.path.isfile(favicon_path):
+        return send_from_directory(base_dir, 'favicon.ico', mimetype='image/x-icon')
+    # Return empty 204 No Content if no favicon exists
+    return '', 204
+
 @main_bp.route('/<path:path>')
 def serve_static(path):
     """Serve static files from the project root.
-    This ensures that URLs like /startseite/startseite.html correctly map to the
-    corresponding file on disk. If the file (or its .html variant) does not exist,
-    a 404 response with a clear message is returned.
+    HTML files are rendered as templates to allow CSP nonces.
     """
-    # Determine the absolute base directory of the project (one level above this file)
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-    # Resolve the requested path relative to the base directory
     file_path = os.path.join(base_dir, path)
-    # If the exact file exists, serve it
+
+    # 1. Exact Match
     if os.path.isfile(file_path):
+        if path.endswith('.html'):
+             # Render HTML as template (injects csp_nonce)
+             return render_template(path)
         return send_from_directory(base_dir, path)
-    # If a .html version exists, serve that
+    
+    # 2. Try with .html extension
     html_path = file_path + '.html'
     if os.path.isfile(html_path):
-        rel_html = os.path.relpath(html_path, base_dir)
-        return send_from_directory(base_dir, rel_html)
-    # Otherwise, return a clear 404
-    return render_template('404.html'), 404
+        return render_template(path + '.html')
 
-@main_bp.app_errorhandler(404)
-def page_not_found(e):
-    return render_template('404.html'), 404
+    # 3. Return JSON 404 (no template needed)
+    return jsonify({'error': 'Page not found', 'path': path}), 404
 
-@main_bp.app_errorhandler(500)
-def internal_server_error(e):
-    return render_template('500.html'), 500

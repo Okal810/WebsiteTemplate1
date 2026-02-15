@@ -1,0 +1,63 @@
+# Docker Compose - Production
+# Usage: docker-compose up -d
+
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: server-systems-web
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
+      - IP_HASH_SALT=${IP_HASH_SALT:-change-me-in-production}
+      - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL:-}
+      # - REDIS_URL=redis://redis:6379/0  # Uncomment when using Redis
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    # depends_on:
+    #   - redis  # Uncomment when using Redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Redis - Uncomment for distributed caching/rate limiting
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: server-systems-redis
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis_data:/data
+  #   restart: unless-stopped
+  #   command: redis-server --appendonly yes
+
+  nginx:
+    image: nginx:alpine
+    container_name: server-systems-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - ./startseite:/app/startseite:ro
+      - ./forum:/app/forum:ro
+      - ./team:/app/team:ro
+      - ./karriere:/app/karriere:ro
+      - ./bewerbungspanel:/app/bewerbungspanel:ro
+      - ./rechtliches:/app/rechtliches:ro
+      - ./help:/app/help:ro
+      - ./xstream:/app/xstream:ro
+    depends_on:
+      - web
+    restart: unless-stopped
+
+# volumes:
+#   redis_data:  # Uncomment when using Redis

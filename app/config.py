@@ -38,6 +38,26 @@ DATABASE_FILE = os.path.join(DATA_DIR, 'database.db')
 SQLALCHEMY_DATABASE_URI = f'sqlite:///{DATABASE_FILE}'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+# Connection Pooling (Performance Optimization)
+SQLALCHEMY_ENGINE_OPTIONS = {
+    'pool_size': 10,           # Max connections in pool
+    'pool_recycle': 3600,      # Recycle connections after 1 hour
+    'pool_pre_ping': True,     # Verify connections before use
+    'max_overflow': 5,         # Additional connections beyond pool_size
+    'pool_timeout': 30         # Seconds to wait for connection
+}
+
+# Static File Caching (1 year for versioned assets)
+SEND_FILE_MAX_AGE_DEFAULT = 31536000
+
+# Response Compression
+COMPRESS_MIMETYPES = [
+    'text/html', 'text/css', 'text/javascript',
+    'application/json', 'application/javascript'
+]
+COMPRESS_LEVEL = 6        # Balance between speed and compression
+COMPRESS_MIN_SIZE = 500   # Only compress responses > 500 bytes
+
 # Legacy JSON files (kept for backwards compatibility)
 DATA_FILE = os.path.join(DATA_DIR, 'applications.json')
 WARNS_FILE = os.path.join(DATA_DIR, 'warns.json')
@@ -95,5 +115,11 @@ def init_files():
         if not os.path.exists(file_path):
             with open(file_path, 'w') as f:
                 json.dump({}, f)
+
+
+# Security Flags
+# Detect if running with HTTPS (Certificate exists or Env var set)
+HAS_HTTPS = os.path.exists('cert.pem') and os.path.exists('key.pem')
+SECURE_COOKIES = os.environ.get("SECURE_COOKIES", "True" if HAS_HTTPS else "False").lower() == "true"
 
 init_files()

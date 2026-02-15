@@ -5,4 +5,5 @@ requests==2.31.0
 colorlog==6.8.0
 cryptography
 cachetools>=5.3.0
+flask-compress>=1.14
 # redis[hiredis]>=5.0.0  # Uncomment for production distributed rate limiting
